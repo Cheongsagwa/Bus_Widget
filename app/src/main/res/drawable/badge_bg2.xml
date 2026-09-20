@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 노선 번호 원형 뱃지 (route_badge2). 뷰가 정사각형이어야 정원으로 보인다. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/route_badge2" />
+</shape>

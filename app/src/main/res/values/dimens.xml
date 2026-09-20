@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ┌──────────────────────────────────────────────────────────────┐
+  │  위젯의 크기·여백·글자 크기는 전부 여기서 관리합니다.          │
+  │  Figma 의 px 값을 그대로 dp 로, 글자는 sp 로 넣으면 됩니다.    │
+  │  (앱 화면 쪽 값은 ui/theme/Tokens.kt 에 있습니다)              │
+  └──────────────────────────────────────────────────────────────┘
+-->
+<resources>
+
+    <!-- ===== 위젯 바깥 틀 ===== -->
+    <dimen name="widget_corner_radius">28dp</dimen>
+    <dimen name="widget_padding_start">16dp</dimen>
+    <dimen name="widget_padding_top">12dp</dimen>
+    <dimen name="widget_padding_end">12dp</dimen>
+    <dimen name="widget_padding_bottom">12dp</dimen>
+
+    <!-- ===== 헤더 (정류장 이름 줄) ===== -->
+    <dimen name="widget_header_icon_size">16dp</dimen>
+    <dimen name="widget_header_icon_gap">6dp</dimen>
+    <dimen name="widget_refresh_button_size">26dp</dimen>
+    <dimen name="widget_refresh_button_padding">4dp</dimen>
+    <dimen name="widget_stop_name_text">13sp</dimen>
+    <dimen name="widget_updated_text">10sp</dimen>
+    <dimen name="widget_message_text">12sp</dimen>
+    <dimen name="widget_rows_top_margin">6dp</dimen>
+
+    <!-- ===== 노선 한 줄 ===== -->
+    <dimen name="widget_row_padding_vertical">5dp</dimen>
+    <!-- 노선 번호 원형 뱃지. 정원이라 가로·세로가 같아야 한다 -->
+    <dimen name="widget_badge_size">46dp</dimen>
+    <!-- 뱃지 ↔ 오른쪽 텍스트 사이 간격 -->
+    <dimen name="widget_badge_gap">12dp</dimen>
+    <!-- 2열로 보일 때 왼쪽 칸 ↔ 오른쪽 칸 사이 간격 -->
+    <dimen name="widget_column_gap">10dp</dimen>
+    <!-- 이 폭(dp) 이상이면 노선을 2열로 보여준다 (4칸 위젯 ≈ 250dp 이상) -->
+    <dimen name="widget_two_column_min_width">240dp</dimen>
+    <!-- 노선 번호 글자 크기. 자릿수가 많으면 코드가 아래 값으로 줄인다 -->
+    <dimen name="widget_badge_text">16sp</dimen>
+    <dimen name="widget_badge_text_3digit">14sp</dimen>
+    <dimen name="widget_badge_text_4digit">12sp</dimen>
+    <dimen name="widget_badge_text_5digit">10sp</dimen>
+    <!-- 1줄: 남은 시간 / 2줄: 남은 정류장 수 -->
+    <dimen name="widget_arrival_text">18sp</dimen>
+    <dimen name="widget_arrival_sub_text">11sp</dimen>
+
+    <!-- 새로고침 가림막 가운데 아이콘 · 도는 표시 크기 -->
+    <dimen name="widget_overlay_icon_size">40dp</dimen>
+</resources>

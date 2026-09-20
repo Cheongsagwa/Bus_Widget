@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 다크 모드: 어두운 기본 테마 + 어두운 창 배경 (흰 화면 번쩍임 방지) -->
+    <style name="Theme.CcBusWidget" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/expanded_surface</item>
+    </style>
+</resources>

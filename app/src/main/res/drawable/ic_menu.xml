@@ -1,0 +1,8 @@
+<!-- 더보기(햄버거) — Figma -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24"
+    android:tint="#FFFFFF">
+    <path android:fillColor="#FFFFFF" android:strokeColor="#FFFFFF" android:strokeWidth="1"
+        android:pathData="M5,18.25H19C19.1379,18.25 19.25,18.3621 19.25,18.5C19.25,18.6384 19.1383,18.75 19,18.75H5C4.86171,18.75 4.75,18.6384 4.75,18.5C4.75,18.3621 4.86214,18.25 5,18.25ZM5,11.75H19C19.1379,11.75 19.25,11.8621 19.25,12C19.25,12.1384 19.1383,12.25 19,12.25H5C4.86171,12.25 4.75,12.1384 4.75,12C4.75,11.8621 4.86214,11.75 5,11.75ZM5,5.25H19C19.1379,5.25 19.25,5.36214 19.25,5.5C19.25,5.63842 19.1383,5.75 19,5.75H5C4.86171,5.75 4.75,5.63842 4.75,5.5C4.75,5.36214 4.86214,5.25 5,5.25Z" />
+</vector>

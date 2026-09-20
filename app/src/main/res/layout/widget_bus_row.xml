@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:baselineAligned="false"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/widget_row_padding_vertical"
+    android:paddingBottom="@dimen/widget_row_padding_vertical">
+
+    <!--
+      노선 번호 원형 뱃지.
+      정원으로 보이려면 가로/세로가 같아야 하므로 같은 dimen 을 쓴다.
+      글씨체는 지정하지 않아 시스템 기본 글꼴(삼성 기기에서는 One UI Sans)을 그대로 쓴다.
+    -->
+    <TextView
+        android:id="@+id/route_no"
+        android:layout_width="@dimen/widget_badge_size"
+        android:layout_height="@dimen/widget_badge_size"
+        android:background="@drawable/badge_bg"
+        android:gravity="center"
+        android:lineSpacingMultiplier="0.9"
+        android:maxLines="2"
+        android:text="1"
+        android:textColor="@color/route_badge_text"
+        android:textSize="@dimen/widget_badge_text"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/widget_badge_gap"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- 1줄: 남은 시간 -->
+        <TextView
+            android:id="@+id/arr_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="-"
+            android:textColor="@color/widget_text_dark"
+            android:textSize="@dimen/widget_arrival_text"
+            android:textStyle="bold" />
+
+        <!-- 2줄: 남은 정류장 수 -->
+        <TextView
+            android:id="@+id/arr_sub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text=""
+            android:textColor="@color/widget_subtext_dark"
+            android:textSize="@dimen/widget_arrival_sub_text" />
+    </LinearLayout>
+</LinearLayout>

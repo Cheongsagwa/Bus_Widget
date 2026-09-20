@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  다크 모드 색상. 여기 없는 이름은 values/colors.xml 값을 그대로 쓴다.
+-->
+<resources>
+    <color name="navigation_selected">#FF505054</color>
+    <color name="navigation_menu_button">#FF3A3A3C</color>
+    <color name="favorites_surface">#FF17171A</color>
+    <!-- 유리 표면: 밝을 때 #F1F1F3 → 어두울 때 #2E2E30 -->
+    <color name="glass_surface">#802E2E30</color>
+    <color name="glass_surface_white">#802E2E30</color>
+
+    <!-- 유리 표면 위 아이콘·글자 -->
+    <color name="glass_on_surface">#FFFFFFFF</color>
+
+    <!-- 확장창 · 검색창 -->
+    <color name="expanded_surface">#FF17171A</color>
+    <color name="expanded_button">#FF3A3A3C</color>
+    <!-- 지도 위 플로팅 유리판과 같은 투명도. 뒤 목록의 블러가 보이게 한다. -->
+    <color name="search_bar_surface">#802E2E30</color>
+    <!-- 어두운 배경에서는 흰색을 옅게 얹는다 -->
+    <color name="divider">#1FFFFFFF</color>
+    <!-- 어두운 배경에서는 같은 검정 5% 가 보이지 않으므로 흰색으로 -->
+    <color name="timeline_current_overlay">#0DFFFFFF</color>
+    <color name="search_secondary">#FFA0A0A4</color>
+    <!-- 스플래시 배경 (다크 모드). 라이트와 같은 브랜드색으로 두려면 이 줄을 지우면 된다 -->
+    <color name="splash_background">#FF17171A</color>
+</resources>

@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">춘천버스 위젯</string>
+    <string name="widget_config_title">위젯 설정</string>
+    <string name="widget_description">정류장과 노선을 지정해 도착 시간을 홈 화면에서 확인합니다.</string>
+    <string name="settings_title">설정</string>
+</resources>

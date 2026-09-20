@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Samsung One UI Home(7.0+)이 위젯 뒤 배경화면을 블러 처리할지 판단할 때 읽는 속성.
+  삼성 프레임워크에 공식 문서는 없고, 이름과 값만 맞으면 런처가 인식한다.
+  (format 을 명시하지 않아야 aapt2 가 flag 선언과 충돌하지 않는다)
+-->
+<resources>
+    <attr name="widgetStyle">
+        <flag name="colorful" value="0x1" />
+        <flag name="monotone" value="0x2" />
+    </attr>
+
+    <attr name="widgetSize">
+        <flag name="tiny" value="0x1" />
+        <flag name="small" value="0x2" />
+        <flag name="wideSmall" value="0x4" />
+        <flag name="medium" value="0x8" />
+        <flag name="large" value="0x10" />
+        <flag name="extraLarge" value="0x20" />
+        <flag name="extraLargeLong" value="0x40" />
+    </attr>
+</resources>

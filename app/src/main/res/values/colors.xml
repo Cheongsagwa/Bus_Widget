@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ┌──────────────────────────────────────────────────────────────┐
+  │  색상은 전부 여기서 관리합니다.                                │
+  │  Figma 에서 정한 HEX 를 이 파일 값만 바꾸면 앱과 위젯에        │
+  │  모두 반영됩니다. (#AARRGGBB 또는 #RRGGBB)                     │
+  └──────────────────────────────────────────────────────────────┘
+-->
+<resources>
+    <color name="navigation_selected">#FFB3B3B3</color>
+    <color name="navigation_menu_button">#FFFCFCFF</color>
+    <color name="favorites_surface">#FFF1F1F3</color>
+
+    <!-- ===== 노선 번호 뱃지 (위젯 · 앱 공용) ===== -->
+    <!-- 유형을 모를 때 쓰는 기본색 -->
+    <color name="route_badge">#00B9BE</color>
+    <!-- 지선 (Figma route_badge2) -->
+    <color name="route_badge2">#FF00B9BE</color>
+    <!-- 간선 (Figma route_badge3) -->
+    <color name="route_badge3">#FFF9A64A</color>
+    <!-- 마을 (Figma route_badge4) -->
+    <color name="route_badge4">#FF7250A0</color>
+    <!-- 뱃지 위 글씨 -->
+    <color name="route_badge_text">#FFFFFFFF</color>
+
+    <!-- ===== 위젯 ===== -->
+    <!-- 배경 판 색. 투명도는 설정 화면의 슬라이더가 정한다 -->
+    <color name="widget_panel_dark">#FF0B0B0F</color>
+    <color name="widget_panel_light">#FFFFFFFF</color>
+    <!-- 어두운 배경일 때 글씨 -->
+    <color name="widget_text_dark">#FFFFFFFF</color>
+    <color name="widget_subtext_dark">#B3FFFFFF</color>
+    <!-- 밝은 배경일 때 글씨 -->
+    <color name="widget_text_light">#FF111111</color>
+    <color name="widget_subtext_light">#99000000</color>
+
+    <!-- ===== 앱 화면 : 유리(반투명) 표면 ===== -->
+    <!-- 지도 위에 떠 있는 버튼 · 시트 · 패널 공통 배경 (Figma #80F1F1F3) -->
+    <color name="glass_surface">#80F1F1F3</color>
+    <!-- 정류장 시트만 흰색 계열 (Figma #80FFFFFF) -->
+    <color name="glass_surface_white">#80FFFFFF</color>
+    <!-- 떠 있는 요소의 그림자 (Figma #40000000, blur 65) -->
+    <color name="glass_shadow">#40000000</color>
+    <!-- 유리 표면 위 아이콘·글자 (다크 모드에서는 흰색) -->
+    <color name="glass_on_surface">#FF000000</color>
+
+    <!-- ===== 확장창 · 검색창 (불투명 배경) ===== -->
+    <!-- 전체 화면 배경 (다크 모드는 values-night) -->
+    <color name="expanded_surface">#FFF3F3F5</color>
+    <!-- 그 위에 떠 있는 원형 버튼 · 검색바 -->
+    <color name="expanded_button">#FFFFFFFF</color>
+    <!-- 아래 검색바 — 뒤 목록이 비쳐 보이도록 반투명 (Figma: 흰색 + 배경 블러) -->
+    <!-- 지도 위 플로팅 유리판과 같은 투명도. 뒤 목록의 블러가 보이게 한다. -->
+    <color name="search_bar_surface">#80F1F1F3</color>
+    <!-- 검색 결과의 보조 글씨 (Figma Light/Secondary) -->
+    <color name="search_secondary">#FF848487</color>
+    <!--
+      구분선. 반투명이라 어디에 얹히든 알아서 옅게 보인다.
+      (떠 있는 시트는 지도가 비쳐 밝고, 확장창은 단색이라 어둡다)
+    -->
+    <color name="divider">#1F000000</color>
+    <!-- 노선 타임라인에서 '지금 보고 있는 정류장' 강조 (Figma: 검정 5%) -->
+    <color name="timeline_current_overlay">#0D000000</color>
+    <!-- 즐겨찾기를 켰을 때 별 색 -->
+    <color name="favorite_on">#FFFFCB0C</color>
+
+    <!-- ===== 앱 화면 ===== -->
+    <!-- Material 테마 강조색 (버튼, 링크) -->
+    <color name="app_accent">#3B82F6</color>
+    <!-- 지도에 그리는 노선 경로선 (뱃지와 같은 색) -->
+    <color name="map_route_path">#FF00B9BE</color>
+    <!-- 지도에서 지금 보고 있는 정류장 마커 -->
+    <color name="map_selected_stop">#FFD93333</color>
+
+    <!-- ===== 런처 아이콘 ===== -->
+    <color name="ic_launcher_background">#1E3A8A</color>
+    <!-- 앱을 켤 때 스플래시 배경 (카카오톡의 노란 화면 같은 것). 다크 모드는 values-night -->
+    <color name="splash_background">#1E3A8A</color>
+</resources>

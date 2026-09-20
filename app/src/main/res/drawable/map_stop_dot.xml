@@ -1,0 +1,13 @@
+<!-- 지도 위 경유 정류장 점 (Figma: 12dp 회색 원 + 흰 테두리 2dp) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="16"
+    android:viewportHeight="16">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M16,8a8,8 0 1,1 -16,0a8,8 0 1,1 16,0z" />
+    <path
+        android:fillColor="#737373"
+        android:pathData="M14,8a6,6 0 1,1 -12,0a6,6 0 1,1 12,0z" />
+</vector>

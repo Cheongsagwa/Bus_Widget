@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:configure="com.cheon.ccbuswidget.ui.ConfigureActivity"
+    android:description="@string/widget_description"
+    android:initialLayout="@layout/widget_bus"
+    android:minHeight="110dp"
+    android:minWidth="250dp"
+    android:previewImage="@mipmap/ic_launcher"
+    android:previewLayout="@layout/widget_bus"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellHeight="2"
+    android:targetCellWidth="4"
+    android:updatePeriodMillis="1800000"
+    android:widgetCategory="home_screen"
+    android:widgetFeatures="reconfigurable"
+    app:widgetSize="small|wideSmall|medium|large"
+    app:widgetStyle="colorful" />

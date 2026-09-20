@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      앱 기본 테마. 창 배경을 앱 배경색으로 칠해 두어
+      화면이 그려지기 전 잠깐 비치는 색이 모드와 맞게 한다. (다크 모드는 values-night)
+    -->
+    <style name="Theme.CcBusWidget" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/expanded_surface</item>
+    </style>
+
+    <!--
+      앱을 켤 때의 스플래시 (지도 화면 전용, 매니페스트의 StopDetailActivity).
+      지도가 준비되면 StopDetailActivity 가 페이드로 걷어 내고 Theme.CcBusWidget 으로 바뀐다.
+      배경색: splash_background / 가운데 로고: 앱 아이콘 전경(ic_launcher_foreground)
+    -->
+    <style name="Theme.CcBusWidget.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.CcBusWidget</item>
+    </style>
+</resources>
