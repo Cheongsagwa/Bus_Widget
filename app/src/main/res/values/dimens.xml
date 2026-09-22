@@ -16,7 +16,6 @@
     <dimen name="widget_padding_bottom">12dp</dimen>
 
     <!-- ===== 헤더 (정류장 이름 줄) ===== -->
-    <dimen name="widget_header_icon_size">16dp</dimen>
     <dimen name="widget_header_icon_gap">6dp</dimen>
     <dimen name="widget_refresh_button_size">26dp</dimen>
     <dimen name="widget_refresh_button_padding">4dp</dimen>

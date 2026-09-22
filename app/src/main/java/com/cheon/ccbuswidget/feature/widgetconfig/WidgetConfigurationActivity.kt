@@ -1,6 +1,5 @@
 package com.cheon.ccbuswidget.feature.widgetconfig
 
-import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
@@ -44,11 +43,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.cheon.ccbuswidget.data.api.TagoApi
+import com.cheon.ccbuswidget.data.local.WidgetStore
 import com.cheon.ccbuswidget.data.model.BusRoute
 import com.cheon.ccbuswidget.data.model.BusStop
-import com.cheon.ccbuswidget.data.api.TagoApi
 import com.cheon.ccbuswidget.data.model.WidgetConfig
-import com.cheon.ccbuswidget.data.local.WidgetStore
 import com.cheon.ccbuswidget.ui.theme.CcBusTheme
 import com.cheon.ccbuswidget.widget.BusWidgetProvider
 import kotlinx.coroutines.launch
@@ -57,7 +56,7 @@ class WidgetConfigurationActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setResult(Activity.RESULT_CANCELED)
+        setResult(RESULT_CANCELED)
 
         val appWidgetId = intent?.extras?.getInt(
             AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -76,7 +75,7 @@ class WidgetConfigurationActivity : ComponentActivity() {
                     onSaved = {
                         BusWidgetProvider.requestRefresh(this, appWidgetId)
                         setResult(
-                            Activity.RESULT_OK,
+                            RESULT_OK,
                             Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
                         )
                         finish()

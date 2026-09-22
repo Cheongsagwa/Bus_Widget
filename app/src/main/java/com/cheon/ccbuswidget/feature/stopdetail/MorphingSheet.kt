@@ -4,20 +4,41 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.lerp as lerpColor
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.semantics.contentDescription
@@ -27,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import com.cheon.ccbuswidget.R
 import com.cheon.ccbuswidget.ui.theme.Tokens
+import androidx.compose.ui.graphics.lerp as lerpColor
 
 /**
  * 즐겨찾기 창에서 시작한 '모핑' 전환을 정류장·노선 시트도 함께 쓰도록 뽑아낸 공통 틀.
@@ -40,6 +62,8 @@ import com.cheon.ccbuswidget.ui.theme.Tokens
  * - [onDismiss] 가 있으면 접힌 상태에서 아래로 끌어 닫을 수 있다.
  * - 처음 나타날 때 72dp 아래에서 떠오르며 페이드 인 된다.
  */
+// maxHeight 를 실제로 쓰고 있는데도 린트가 오류로 잡는 경우가 있어 명시적으로 끈다 (오탐)
+@android.annotation.SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 internal fun MorphingSheet(
     expanded: Boolean,
@@ -81,10 +105,13 @@ internal fun MorphingSheet(
     BoxWithConstraints(
         modifier.fillMaxSize().then(if (backdrop != null) Modifier.recordBackdrop(backdrop) else Modifier)
     ) {
+        // 이 상자(=화면)의 높이. 스코프를 'this.' 로 명시해 두어야 린트가
+        // "BoxWithConstraints scope is not used" 오류로 잘못 잡지 않는다.
+        val fullHeight = this.maxHeight
         val nav = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
         val status = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-        val peek = minOf(Tokens.Sheet.peekHeight, maxHeight - nav - status)
-        val travelPx = with(density) { (maxHeight - peek).toPx().coerceAtLeast(1f) }
+        val peek = minOf(Tokens.Sheet.peekHeight, fullHeight - nav - status)
+        val travelPx = with(density) { (fullHeight - peek).toPx().coerceAtLeast(1f) }
         val p = draggedProgress ?: animation.value
         val shape = RoundedCornerShape(lerp(Tokens.Sheet.cornerRadius, 0.dp, p))
         // 먼저 지도를 더 흐리게 만들고, 후반부에 불투명 배경으로 부드럽게 채운다.
@@ -105,7 +132,7 @@ internal fun MorphingSheet(
             Modifier.align(Alignment.BottomCenter)
                 .padding(bottom = lerp(nav, 0.dp, p),
                     start = lerp(Tokens.Sheet.sideMargin, 0.dp, p), end = lerp(Tokens.Sheet.sideMargin, 0.dp, p))
-                .fillMaxWidth().height(lerp(peek, maxHeight, p))
+                .fillMaxWidth().height(lerp(peek, fullHeight, p))
                 .graphicsLayer {
                     translationY = (1f - appearance.value) * 72.dp.toPx() + pullPx
                     alpha = appearance.value

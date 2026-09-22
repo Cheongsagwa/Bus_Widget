@@ -28,6 +28,9 @@ class StopDetailActivity : ComponentActivity() {
         const val EXTRA_LAT = "lat"
         const val EXTRA_LNG = "lng"
 
+        /** 준비 신호가 오지 않아도 이 시간이 지나면 스플래시를 걷는다 */
+        private const val SPLASH_TIMEOUT_MS = 4_000L
+
         fun intent(
             context: Context,
             nodeId: String,
@@ -54,6 +57,21 @@ class StopDetailActivity : ComponentActivity() {
     override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
         super.onConfigurationChanged(newConfig)
         enableEdgeToEdge()
+        applySystemBarIconColors()
+    }
+
+    /**
+     * 상태바 · 내비게이션 바 아이콘 색을 지금 모드에 맞춘다 (라이트: 검정 / 다크: 흰색).
+     * 스플래시가 걷힐 때 시스템이 바 아이콘 색을 되돌려 놓기 때문에, 걷힌 직후에도 한 번 더 부른다.
+     * (예전에는 라이트 모드에서 앱을 켜면 상태바 아이콘이 흰색으로 남았다)
+     */
+    private fun applySystemBarIconColors() {
+        val night = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
+        androidx.core.view.WindowCompat.getInsetsController(window, window.decorView).apply {
+            isAppearanceLightStatusBars = !night
+            isAppearanceLightNavigationBars = !night
+        }
     }
 
     private var ready = false
@@ -65,10 +83,12 @@ class StopDetailActivity : ComponentActivity() {
         if (!ready || splashExitStarted || isDestroyed) return
         splashExitStarted = true
         val duration = 320L
-        provider.iconView.animate()
-            .scaleX(1.15f).scaleY(1.15f)
-            .setDuration(duration)
-            .start()
+        // 위젯 등 런처가 아닌 곳에서 열면 안드로이드 12+ 는 아이콘 없는 빈 스플래시를 띄운다.
+        // 그때 iconView 를 꺼내면 앱이 바로 꺼졌다(NullPointerException). 있을 때만 키운다.
+        runCatching { provider.iconView }.getOrNull()?.animate()
+            ?.scaleX(1.15f)?.scaleY(1.15f)
+            ?.setDuration(duration)
+            ?.start()
         provider.view.animate()
             .alpha(0f)
             .setDuration(duration)
@@ -76,13 +96,14 @@ class StopDetailActivity : ComponentActivity() {
             .withEndAction {
                 provider.remove()
                 splashProvider = null
+                applySystemBarIconColors()
             }
             .start()
     }
 
     override fun onDestroy() {
         splashProvider?.let { provider ->
-            provider.iconView.animate().cancel()
+            runCatching { provider.iconView }.getOrNull()?.animate()?.cancel()
             provider.view.animate().withEndAction(null).cancel()
             provider.remove()
         }
@@ -104,8 +125,16 @@ class StopDetailActivity : ComponentActivity() {
             finishSplashIfReady()
         }
 
+        // 준비 신호가 어떤 이유로든(지도 SDK 이상 · 예상 못 한 흐름) 오지 않아도
+        // 스플래시에 갇히지 않도록 마지막 안전장치. 보통은 그 전에 onReady 로 걷힌다.
+        window.decorView.postDelayed({
+            ready = true
+            finishSplashIfReady()
+        }, SPLASH_TIMEOUT_MS)
+
         // 상태바 · 내비게이션 바 뒤까지 화면을 채운다 (아래에서 인셋만큼 여백을 준다)
         enableEdgeToEdge()
+        applySystemBarIconColors()
 
         // 런처에서는 지도부터. 위젯이 명시적으로 보낸 정류장만 바로 연다.
         val nodeId = intent.getStringExtra(EXTRA_NODE_ID).orEmpty()

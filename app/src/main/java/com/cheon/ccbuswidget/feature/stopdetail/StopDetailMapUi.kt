@@ -1,172 +1,87 @@
 package com.cheon.ccbuswidget.feature.stopdetail
 //지도, 공용유리 UI
-import android.Manifest
-import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.layer.drawLayer
-import androidx.compose.ui.graphics.rememberGraphicsLayer
-import androidx.compose.animation.core.Animatable
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.RoundRect
-import androidx.compose.ui.graphics.BlurEffect
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.TileMode
-import androidx.compose.ui.graphics.drawscope.clipPath
-import androidx.compose.ui.layout.boundsInWindow
-import androidx.compose.ui.unit.lerp
+import android.view.LayoutInflater
+import android.view.TextureView
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import android.view.LayoutInflater
-import android.view.TextureView
-import android.view.ViewGroup
-import android.view.View
-import android.widget.TextView
-import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.get
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.cheon.ccbuswidget.feature.settings.SettingsActivity
+import androidx.lifecycle.repeatOnLifecycle
 import com.cheon.ccbuswidget.R
-import com.cheon.ccbuswidget.data.model.BusArrival
 import com.cheon.ccbuswidget.data.model.BusLocation
 import com.cheon.ccbuswidget.data.model.BusStop
-import com.cheon.ccbuswidget.data.model.BusModels
-import com.cheon.ccbuswidget.data.model.BusRoute
-import com.cheon.ccbuswidget.data.model.RouteDetail
 import com.cheon.ccbuswidget.data.model.RouteKind
-import com.cheon.ccbuswidget.data.model.RouteLabel
 import com.cheon.ccbuswidget.data.model.RouteStop
-import com.cheon.ccbuswidget.data.model.SearchHistoryItem
-import com.cheon.ccbuswidget.data.api.TagoApi
-import com.cheon.ccbuswidget.data.local.WidgetStore
-import com.cheon.ccbuswidget.ui.theme.CcBusTheme
+import com.cheon.ccbuswidget.feature.settings.SettingsActivity
 import com.cheon.ccbuswidget.ui.theme.Tokens
-import androidx.core.content.ContextCompat
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraUpdate
@@ -179,11 +94,10 @@ import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.overlay.PathOverlay
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import kotlinx.coroutines.flow.first
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 // ------------------------------------------------- 지도 위 유리 버튼 · 오버레이
 
@@ -492,6 +406,7 @@ internal fun findTextureView(view: View): TextureView? = when (view) {
  * 버스 마커. [버스 아이콘 원] + [차량번호 칩] 이 붙어 있는 모양이라
  * 레이아웃을 그려서 이미지로 만든 뒤, 원의 한가운데가 좌표에 오도록 앵커를 잡는다.
  */
+@android.annotation.SuppressLint("InflateParams") // 마커는 부모 없이 그려서 이미지로만 쓴다
 internal fun busMarker(
     context: Context,
     vehicleNo: String,
@@ -555,7 +470,8 @@ internal fun NaverMapPane(
     val lifecycleOwner = LocalLifecycleOwner.current
     var authError by remember { mutableStateOf<String?>(null) }
     var startupError by remember { mutableStateOf<String?>(null) }
-    var mapFullyRendered by remember { mutableStateOf(false) }
+    /** 지도가 마지막으로 '모든 데이터를 다 그림(fully)' 을 알린 시각 (0 = 아직 한 번도) */
+    var lastFullyRenderedAt by remember { mutableStateOf(0L) }
     var startupFinished by remember { mutableStateOf(false) }
     var naverMap by remember { mutableStateOf<NaverMap?>(null) }
     // 오버레이를 용도별로 나눠 둔다.
@@ -592,21 +508,36 @@ internal fun NaverMapPane(
     LaunchedEffect(mapView, startupFinished) {
         if (startupFinished) return@LaunchedEffect
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            delay(15_000L)
+            delay(15.seconds)
             startupError = "지도를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요."
         }
     }
     LaunchedEffect(authError) {
         if (authError != null) startupError = "지도 인증에 실패했어요. 설정에서 지도 API 키를 확인해 주세요."
     }
-    LaunchedEffect(mapFullyRendered, initialLocationSettled, startupError) {
+    // 시작 완료 판정.
+    // 예전에는 '다 그려짐' 플래그를 카메라 이동 · 야간 모드 적용 · 현위치 이동 때 false 로 되돌렸는데,
+    // 되돌린 뒤 지도가 다시 그릴 게 없으면(이미 받은 타일 · 같은 모드) 렌더 알림이 다시 오지 않아
+    // 플래그가 영영 false 로 남았다 → 위젯에서 열면(시트 여백 이동) 스플래시에 갇혔다.
+    // 이제는 되돌리지 않고 '시각'으로 판단한다:
+    //  1) 지도가 한 번이라도 다 그려졌고
+    //  2) 시작 위치가 정해진 뒤(위젯 정류장 / 내 위치) 다시 다 그려지면 → 완료.
+    //     단, 그 뒤 새 렌더 알림이 안 오더라도 1.2초 뒤에는 완료로 본다.
+    LaunchedEffect(initialLocationSettled, startupError) {
         if (startupFinished) return@LaunchedEffect
-        if (startupError != null || (mapFullyRendered && initialLocationSettled)) {
-            // 렌더링 콜백/오류 상태 변경이 실제 화면에 반영될 프레임을 허용한다.
-            repeat(2) { androidx.compose.runtime.withFrameNanos { } }
-            startupFinished = true
-            latestOnReady()
+        if (startupError == null) {
+            if (!initialLocationSettled) return@LaunchedEffect
+            val settledAt = android.os.SystemClock.uptimeMillis()
+            kotlinx.coroutines.withTimeoutOrNull(1_200.milliseconds) {
+                androidx.compose.runtime.snapshotFlow { lastFullyRenderedAt }.first { it >= settledAt }
+            }
+            // 지도가 아직 한 번도 안 그려졌으면 그려질 때까지 (못 그리면 15초 뒤 오류 화면)
+            androidx.compose.runtime.snapshotFlow { lastFullyRenderedAt }.first { it > 0L }
         }
+        // 렌더링 콜백/오류 상태 변경이 실제 화면에 반영될 프레임을 허용한다.
+        repeat(2) { androidx.compose.runtime.withFrameNanos { } }
+        startupFinished = true
+        latestOnReady()
     }
 
     // 지도 화면을 축소해서 떠 온다 — 유리 표면들이 이걸 잘라서 블러한다.
@@ -637,15 +568,15 @@ internal fun NaverMapPane(
                     val h = (texture.height / scale).coerceAtLeast(1)
                     val back = 1 - front
                     val bmp = buffers[back]?.takeIf { it.width == w && it.height == h }
-                        ?: android.graphics.Bitmap.createBitmap(w, h, android.graphics.Bitmap.Config.ARGB_8888)
+                        ?: createBitmap(w, h)
                             .also { buffers[back] = it }
                     val captured = runCatching { texture.getBitmap(bmp) }.getOrNull() != null
                     // 지도가 아직 그려지지 않은 순간에는 텅 빈(투명) 프레임이 넘어온다.
                     // 그대로 깔면 유리 표면이 한 번씩 번쩍이므로 버리고 직전 프레임을 유지한다.
                     val filled = captured && (
-                        bmp.getPixel(w / 2, h / 2) or
-                            bmp.getPixel(w / 4, h / 4) or
-                            bmp.getPixel(w * 3 / 4, h * 3 / 4)
+                        bmp[w / 2, h / 2] or
+                            bmp[w / 4, h / 4] or
+                            bmp[w * 3 / 4, h * 3 / 4]
                         ) != 0
                     if (filled) {
                         front = back
@@ -654,7 +585,7 @@ internal fun NaverMapPane(
                     }
                 }
                 val moving = now - snapshot.cameraMovedAt < 300
-                delay(if (moving) Tokens.Map.backdropIntervalMs else Tokens.Map.backdropIdleIntervalMs)
+                delay((if (moving) Tokens.Map.backdropIntervalMs else Tokens.Map.backdropIdleIntervalMs).milliseconds)
             }
         }
     }
@@ -680,11 +611,10 @@ internal fun NaverMapPane(
         val renderedListener = NaverMap.OnMapRenderedListener { fully, stable ->
             // fully는 모든 지도 데이터가 그려졌다는 뜻이다. stable까지 기다리면
             // 위치 표시 등의 애니메이션 때문에 시작 완료가 늦어질 수 있다.
-            if (!startupFinished) mapFullyRendered = fully
+            if (fully) lastFullyRenderedAt = android.os.SystemClock.uptimeMillis()
             if (fully && stable) snapshot.markDirty()
         }
         val cameraListener = NaverMap.OnCameraChangeListener { _, _ ->
-            if (!startupFinished) mapFullyRendered = false
             snapshot.cameraMovedAt = android.os.SystemClock.uptimeMillis()
             snapshot.markDirty()
         }
@@ -725,7 +655,6 @@ internal fun NaverMapPane(
     // (기본 지도 유형은 Basic 이라 야간 모드를 지원한다)
     LaunchedEffect(naverMap, nightMode) {
         val map = naverMap ?: return@LaunchedEffect
-        mapFullyRendered = false
         map.isNightModeEnabled = nightMode
         map.setBackgroundColor(mapBackgroundColor(nightMode))
         snapshot.markDirty()
@@ -767,7 +696,6 @@ internal fun NaverMapPane(
 
         val here = currentLocationOrNull(context)
         if (here != null) {
-            mapFullyRendered = false
             val target = LatLng(here.latitude, here.longitude)
             map.locationOverlay.isVisible = true
             map.locationOverlay.position = target
@@ -969,7 +897,7 @@ private suspend fun currentLocationOrNull(context: Context): android.location.Lo
     // 빠른 순서: fused(구글 위치) → 네트워크 → GPS
     val provider = listOf("fused", LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER)
         .firstOrNull { it in enabled } ?: return last
-    val fresh = kotlinx.coroutines.withTimeoutOrNull(5_000L) {
+    val fresh = kotlinx.coroutines.withTimeoutOrNull(5.seconds) {
         kotlinx.coroutines.suspendCancellableCoroutine<android.location.Location?> { cont ->
             val signal = android.os.CancellationSignal()
             cont.invokeOnCancellation { signal.cancel() }

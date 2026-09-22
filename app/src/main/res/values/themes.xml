@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!--
       앱 기본 테마. 창 배경을 앱 배경색으로 칠해 두어
       화면이 그려지기 전 잠깐 비치는 색이 모드와 맞게 한다. (다크 모드는 values-night)
+
+      windowLightStatusBar / windowLightNavigationBar = true → 상태바·내비게이션 바 아이콘이 검은색.
+      스플래시가 걷힐 때 시스템이 이 테마 값으로 바 아이콘 색을 되돌리기 때문에 여기서도 맞춰 둬야 한다.
+      (없으면 라이트 모드에서 스플래시 뒤 상태바 아이콘이 흰색으로 남았다)
     -->
     <style name="Theme.CcBusWidget" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/expanded_surface</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
     </style>
 
     <!--

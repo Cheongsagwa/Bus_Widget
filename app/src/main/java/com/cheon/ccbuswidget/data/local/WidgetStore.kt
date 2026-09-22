@@ -1,9 +1,13 @@
 package com.cheon.ccbuswidget.data.local
 
-import com.cheon.ccbuswidget.data.model.*
-
 import android.content.Context
 import android.os.Build
+import androidx.core.content.edit
+import com.cheon.ccbuswidget.data.model.BusRoute
+import com.cheon.ccbuswidget.data.model.BusStop
+import com.cheon.ccbuswidget.data.model.FavoriteItem
+import com.cheon.ccbuswidget.data.model.SearchHistoryItem
+import com.cheon.ccbuswidget.data.model.WidgetConfig
 
 /**
  * 위젯별 설정과 공용 API 키를 SharedPreferences 에 저장한다.
@@ -31,7 +35,7 @@ object WidgetStore {
     fun getApiKey(context: Context): String = prefs(context).getString(KEY_API, "").orEmpty()
 
     fun setApiKey(context: Context, key: String) {
-        prefs(context).edit().putString(KEY_API, key.trim()).apply()
+        prefs(context).edit { putString(KEY_API, key.trim()) }
     }
 
     /** 네이버 클라우드 플랫폼 Maps 의 Key ID */
@@ -39,14 +43,14 @@ object WidgetStore {
         prefs(context).getString(KEY_NAVER, "").orEmpty()
 
     fun setNaverKeyId(context: Context, key: String) {
-        prefs(context).edit().putString(KEY_NAVER, key.trim()).apply()
+        prefs(context).edit { putString(KEY_NAVER, key.trim()) }
     }
 
     fun getCityCode(context: Context): String =
         prefs(context).getString(KEY_CITY, DEFAULT_CITY_CODE) ?: DEFAULT_CITY_CODE
 
     fun setCityCode(context: Context, code: String) {
-        prefs(context).edit().putString(KEY_CITY, code).apply()
+        prefs(context).edit { putString(KEY_CITY, code) }
     }
 
     // ---- 즐겨찾기 --------------------------------------------------------
@@ -63,7 +67,7 @@ object WidgetStore {
 
     /** 정류장·노선을 섞은 즐겨찾기 순서를 저장한다 ([FavoriteItem.key] 목록) */
     fun setFavoriteOrder(context: Context, keys: List<String>) {
-        prefs(context).edit().putString(KEY_FAVORITE_ORDER, keys.joinToString("\n")).apply()
+        prefs(context).edit { putString(KEY_FAVORITE_ORDER, keys.joinToString("\n")) }
     }
 
     private fun removeFromOrder(context: Context, key: String) {
@@ -111,7 +115,7 @@ object WidgetStore {
         val p = prefs(context)
         val current = p.getStringSet(KEY_FAVORITES, emptySet()).orEmpty()
             .filterNot { it.substringBefore("|") == nodeId }.toSet()
-        p.edit().putStringSet(KEY_FAVORITES, current).apply()
+        p.edit { putStringSet(KEY_FAVORITES, current) }
         removeFromOrder(context, FavoriteItem.STOP_PREFIX + nodeId)
     }
 
@@ -140,7 +144,7 @@ object WidgetStore {
             )
             nowOn = true
         }
-        p.edit().putStringSet(KEY_FAVORITES, current).apply()
+        p.edit { putStringSet(KEY_FAVORITES, current) }
         // 해제했다가 다시 추가하면 예전 자리 대신 맨 뒤에 붙도록 순서에서도 뺀다
         if (!nowOn) removeFromOrder(context, FavoriteItem.STOP_PREFIX + stop.nodeId)
         return nowOn
@@ -169,7 +173,7 @@ object WidgetStore {
         val p = prefs(context)
         val current = p.getStringSet(KEY_FAVORITE_ROUTES, emptySet()).orEmpty()
             .filterNot { it.substringBefore("|") == routeId }.toSet()
-        p.edit().putStringSet(KEY_FAVORITE_ROUTES, current).apply()
+        p.edit { putStringSet(KEY_FAVORITE_ROUTES, current) }
         removeFromOrder(context, FavoriteItem.ROUTE_PREFIX + routeId)
     }
 
@@ -195,7 +199,7 @@ object WidgetStore {
             current.add(listOf(routeId, routeNo, routeType.orEmpty()).joinToString("|"))
             nowOn = true
         }
-        p.edit().putStringSet(KEY_FAVORITE_ROUTES, current).apply()
+        p.edit { putStringSet(KEY_FAVORITE_ROUTES, current) }
         if (!nowOn) removeFromOrder(context, FavoriteItem.ROUTE_PREFIX + routeId)
         return nowOn
     }
@@ -244,9 +248,9 @@ object WidgetStore {
             }
 
     private fun writeHistory(context: Context, lines: List<String>) {
-        prefs(context).edit()
-            .putString(KEY_SEARCH_HISTORY, lines.take(SEARCH_HISTORY_MAX).joinToString("\n"))
-            .apply()
+        prefs(context).edit {
+            putString(KEY_SEARCH_HISTORY, lines.take(SEARCH_HISTORY_MAX).joinToString("\n"))
+        }
     }
 
     private fun rawHistory(context: Context): List<String> =
@@ -281,17 +285,17 @@ object WidgetStore {
 
     fun save(context: Context, config: WidgetConfig) {
         val id = config.appWidgetId
-        prefs(context).edit()
-            .putString("w_${id}_nodeId", config.nodeId)
-            .putString("w_${id}_nodeName", config.nodeName)
-            .putString("w_${id}_lat", config.gpsLat?.toString())
-            .putString("w_${id}_lng", config.gpsLng?.toString())
-            .putString("w_${id}_routes", config.routeNumbers.joinToString("|"))
-            .putInt("w_${id}_alpha", config.backgroundAlpha)
-            .putBoolean("w_${id}_dark", config.darkStyle)
-            .putInt("w_${id}_rows", config.maxRows)
-            .putBoolean("w_${id}_blur", config.oneUiBlur)
-            .apply()
+        prefs(context).edit {
+            putString("w_${id}_nodeId", config.nodeId)
+            putString("w_${id}_nodeName", config.nodeName)
+            putString("w_${id}_lat", config.gpsLat?.toString())
+            putString("w_${id}_lng", config.gpsLng?.toString())
+            putString("w_${id}_routes", config.routeNumbers.joinToString("|"))
+            putInt("w_${id}_alpha", config.backgroundAlpha)
+            putBoolean("w_${id}_dark", config.darkStyle)
+            putInt("w_${id}_rows", config.maxRows)
+            putBoolean("w_${id}_blur", config.oneUiBlur)
+        }
     }
 
     fun load(context: Context, appWidgetId: Int): WidgetConfig? {
@@ -313,23 +317,23 @@ object WidgetStore {
     }
 
     fun delete(context: Context, appWidgetId: Int) {
-        prefs(context).edit()
-            .remove("w_${appWidgetId}_nodeId")
-            .remove("w_${appWidgetId}_nodeName")
-            .remove("w_${appWidgetId}_lat")
-            .remove("w_${appWidgetId}_lng")
-            .remove("w_${appWidgetId}_routes")
-            .remove("w_${appWidgetId}_alpha")
-            .remove("w_${appWidgetId}_dark")
-            .remove("w_${appWidgetId}_rows")
-            .remove("w_${appWidgetId}_blur")
-            .apply()
+        prefs(context).edit {
+            remove("w_${appWidgetId}_nodeId")
+            remove("w_${appWidgetId}_nodeName")
+            remove("w_${appWidgetId}_lat")
+            remove("w_${appWidgetId}_lng")
+            remove("w_${appWidgetId}_routes")
+            remove("w_${appWidgetId}_alpha")
+            remove("w_${appWidgetId}_dark")
+            remove("w_${appWidgetId}_rows")
+            remove("w_${appWidgetId}_blur")
+        }
     }
 
     // ---- 마지막 갱신 시각 ------------------------------------------------
 
     fun setLastUpdated(context: Context, appWidgetId: Int, millis: Long) {
-        prefs(context).edit().putLong("w_${appWidgetId}_ts", millis).apply()
+        prefs(context).edit { putLong("w_${appWidgetId}_ts", millis) }
     }
 
     fun getLastUpdated(context: Context, appWidgetId: Int): Long =

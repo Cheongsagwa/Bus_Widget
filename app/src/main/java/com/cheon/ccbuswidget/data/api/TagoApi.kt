@@ -1,22 +1,28 @@
 package com.cheon.ccbuswidget.data.api
 
-import com.cheon.ccbuswidget.data.model.*
-
 import android.content.Context
+import com.cheon.ccbuswidget.data.api.TagoApi.cachedItems
+import com.cheon.ccbuswidget.data.api.TagoApi.prefetch
+import com.cheon.ccbuswidget.data.model.BusArrival
+import com.cheon.ccbuswidget.data.model.BusLocation
+import com.cheon.ccbuswidget.data.model.BusRoute
+import com.cheon.ccbuswidget.data.model.BusStop
+import com.cheon.ccbuswidget.data.model.RouteDetail
+import com.cheon.ccbuswidget.data.model.RouteStop
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.security.MessageDigest
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
+import java.security.MessageDigest
 import java.util.concurrent.TimeUnit
 
 /**
@@ -499,7 +505,7 @@ object TagoApi {
         val root = try {
             JSONObject(text)
         } catch (e: Exception) {
-            throw ApiException("응답을 해석할 수 없습니다. 서비스키와 활용신청 상태를 확인해 주세요.")
+            throw ApiException("응답을 해석할 수 없습니다. 서비스키와 활용신청 상태를 확인해 주세요.").apply { initCause(e) }
         }
 
         val response = root.optJSONObject("response") ?: throw ApiException("알 수 없는 응답 형식")

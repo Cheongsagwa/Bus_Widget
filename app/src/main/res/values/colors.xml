@@ -70,7 +70,6 @@
     <!-- 지도에 그리는 노선 경로선 (뱃지와 같은 색) -->
     <color name="map_route_path">#FF00B9BE</color>
     <!-- 지도에서 지금 보고 있는 정류장 마커 -->
-    <color name="map_selected_stop">#FFD93333</color>
 
     <!-- ===== 런처 아이콘 ===== -->
     <color name="ic_launcher_background">#1E3A8A</color>
