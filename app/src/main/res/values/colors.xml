@@ -61,6 +61,11 @@
     <color name="divider">#1F000000</color>
     <!-- 노선 타임라인에서 '지금 보고 있는 정류장' 강조 (Figma: 검정 5%) -->
     <color name="timeline_current_overlay">#0D000000</color>
+    <!-- 노선 시간표 (Figma 81:1684): 표 머리줄 검정 10% · 본문 검정 5% · 회색 칸 #D9D9D9 · 글자 검정 70% -->
+    <color name="timetable_header">#1A000000</color>
+    <color name="timetable_body">#0D000000</color>
+    <color name="timetable_cell">#FFD9D9D9</color>
+    <color name="timetable_text">#B3000000</color>
     <!-- 즐겨찾기를 켰을 때 별 색 -->
     <color name="favorite_on">#FFFFCB0C</color>
 

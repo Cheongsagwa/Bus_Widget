@@ -126,6 +126,37 @@ internal fun FavoritesEditActionBar(
 }
 
 /**
+ * 버튼 하나짜리 바 — 노선 세부 확장창의 [시간표 보기] (Figma 78:934).
+ * 저장·취소 바와 같은 틀(192x57, 반경 50, 그림자 0/0/20 15%, 18sp SemiBold)에 칸이 하나뿐이다.
+ */
+@Composable
+internal fun SingleActionBar(
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    backdrop: ContentBackdrop? = null,
+    /**
+     * false 면 바 자체는 블러를 그리지 않고 반투명 색만 칠한다.
+     * 뒤에 깔린 목록이 바 자리에 흐린 복사본을 직접 그려 줄 때 쓴다 (검색바와 같은 방식).
+     */
+    blurBehind: Boolean = true
+) {
+    val shape = RoundedCornerShape(Tokens.ActionBar.corner)
+    val shadow = colorResource(R.color.glass_on_surface).copy(alpha = 0.15f)
+    val size = modifier.width(Tokens.ActionBar.width).height(Tokens.ActionBar.height)
+        .shadow(Tokens.ActionBar.shadowElevation, shape, ambientColor = shadow, spotColor = shadow)
+    if (!blurBehind) {
+        Box(size.clip(shape).background(glassColor(), shape)) {
+            ActionBarOption(label, onClick, Modifier.fillMaxSize())
+        }
+        return
+    }
+    NavigationGlassSurface(shape, glassColor(), size, backdrop) {
+        ActionBarOption(label, onClick, Modifier.fillMaxSize())
+    }
+}
+
+/**
  * 바를 반으로 나눈 한쪽 전체가 버튼이다.
  * Figma: 바깥 여백 24 + 세 칸(48씩) → 저장 글자 중심 x=48, 취소 x=144 로, 각 반쪽(96)의 정가운데와 같다.
  */

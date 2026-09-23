@@ -364,6 +364,31 @@ object Tokens {
         val modelChipGap = 2.dp
     }
 
+    /**
+     * 노선 시간표 (Figma 81:937 "노선세부 확장창 / 시간표 보기", 81:1684).
+     * 폭 332 표를 가운데에 두고(좌우 40), 구분선 아래 34 부터 표끼리 27 간격으로 쌓는다.
+     * 표 = 머리줄(높이 27, 위 모서리 10, 12sp Bold) + 본문(안쪽 5, 5칸, 칸 높이 18, 아래 모서리 10).
+     * 칸은 바둑판처럼 한 칸 걸러 회색이다. 글자 12sp SemiBold.
+     */
+    object Timetable {
+        val horizontalPadding = 40.dp
+        /** 구분선 ↔ 첫 표 (Figma 174 → 208) */
+        val topPadding = 34.dp
+        val sectionGap = 27.dp
+        val corner = 10.dp
+        val headerHeight = 27.dp
+        val headerText = 12.sp
+        val bodyPadding = 5.dp
+        const val columns = 5
+        val cellHeight = 18.dp
+        val cellText = 12.sp
+        val noteText = 12.sp
+        /** 목록 맨 아래 여백 (내비게이션 바 위) */
+        val bottomPadding = 40.dp
+        /** 노선 타임라인 마지막 정류장 ↔ [시간표 보기] 바 윗변 사이 여유 */
+        val barClearance = 16.dp
+    }
+
     /** 지도 오버레이 */
     object Map {
         /** 노선 경로선 두께 */

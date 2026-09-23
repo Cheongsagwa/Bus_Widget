@@ -23,6 +23,11 @@
     <!-- 어두운 배경에서는 같은 검정 5% 가 보이지 않으므로 흰색으로 -->
     <color name="timeline_current_overlay">#0DFFFFFF</color>
     <color name="search_secondary">#FFA0A0A4</color>
+    <!-- 노선 시간표: 어두운 배경에서는 흰색을 옅게 얹는다 -->
+    <color name="timetable_header">#1AFFFFFF</color>
+    <color name="timetable_body">#0DFFFFFF</color>
+    <color name="timetable_cell">#FF2F2F33</color>
+    <color name="timetable_text">#B3FFFFFF</color>
     <!-- 스플래시 배경 (다크 모드). 라이트와 같은 브랜드색으로 두려면 이 줄을 지우면 된다 -->
     <color name="splash_background">#FF17171A</color>
 </resources>

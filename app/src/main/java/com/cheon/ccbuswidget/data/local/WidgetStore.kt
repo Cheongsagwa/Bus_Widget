@@ -204,6 +204,48 @@ object WidgetStore {
         return nowOn
     }
 
+    // ---- 계정 동기화 (네이버 로그인) ---------------------------------------
+
+    /**
+     * 서버와 주고받는 즐겨찾기 원본. 저장 형식 그대로(정류장 "nodeId|이름|번호|lat|lng",
+     * 노선 "routeId|번호|유형", 순서 "stop:…/route:…") 옮겨서 앱 버전이 달라도 그대로 되살린다.
+     */
+    data class FavoritesSnapshot(
+        val stops: Set<String>,
+        val routes: Set<String>,
+        val order: List<String>
+    ) {
+        val isEmpty: Boolean get() = stops.isEmpty() && routes.isEmpty()
+    }
+
+    fun favoritesSnapshot(context: Context): FavoritesSnapshot {
+        val p = prefs(context)
+        return FavoritesSnapshot(
+            stops = p.getStringSet(KEY_FAVORITES, emptySet()).orEmpty().toSet(),
+            routes = p.getStringSet(KEY_FAVORITE_ROUTES, emptySet()).orEmpty().toSet(),
+            order = readOrder(context)
+        )
+    }
+
+    /** 즐겨찾기를 통째로 바꾼다 (서버에서 받아 온 것으로 되살릴 때) */
+    fun applyFavoritesSnapshot(context: Context, snapshot: FavoritesSnapshot) {
+        prefs(context).edit {
+            putStringSet(KEY_FAVORITES, snapshot.stops)
+            putStringSet(KEY_FAVORITE_ROUTES, snapshot.routes)
+            putString(KEY_FAVORITE_ORDER, snapshot.order.joinToString("\n"))
+        }
+    }
+
+    /** 즐겨찾기 관련 값이 바뀌었는지 (동기화가 이 키들만 지켜본다) */
+    fun isFavoritesKey(key: String?): Boolean =
+        key == KEY_FAVORITES || key == KEY_FAVORITE_ROUTES || key == KEY_FAVORITE_ORDER
+
+    /** 즐겨찾기가 바뀔 때 알림을 받는다. [listener] 는 호출하는 쪽이 계속 들고 있어야 한다. */
+    fun registerChangeListener(
+        context: Context,
+        listener: android.content.SharedPreferences.OnSharedPreferenceChangeListener
+    ) = prefs(context).registerOnSharedPreferenceChangeListener(listener)
+
     // ---- 검색 기록 --------------------------------------------------------
 
     private const val KEY_SEARCH_HISTORY = "search_history_v2"

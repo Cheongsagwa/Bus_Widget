@@ -9,3 +9,6 @@
 -dontwarn org.conscrypt.**
 -dontwarn org.bouncycastle.**
 -dontwarn org.openjsse.**
+
+# 네이버 아이디로 로그인 SDK (SDK 가 자체 규칙을 포함하므로 경고만 끈다)
+-dontwarn com.navercorp.nid.**

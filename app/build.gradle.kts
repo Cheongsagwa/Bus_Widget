@@ -1,8 +1,16 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
 }
+
+// 비밀 값은 저장소에 올라가지 않는 local.properties 에서 읽는다 (.gitignore 에 포함됨)
+val localProps = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+}
+fun localProp(name: String): String = localProps.getProperty(name, "").trim()
 
 android {
     namespace = "com.cheon.ccbuswidget"
@@ -14,6 +22,11 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        // 네이버 아이디로 로그인 (developers.naver.com 에서 발급) · 즐겨찾기 동기화 서버 주소 (sync-server)
+        buildConfigField("String", "NAVER_CLIENT_ID", "\"${localProp("naver.client.id")}\"")
+        buildConfigField("String", "NAVER_CLIENT_SECRET", "\"${localProp("naver.client.secret")}\"")
+        buildConfigField("String", "SYNC_URL", "\"${localProp("sync.url")}\"")
     }
 
     buildTypes {
@@ -37,6 +50,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -61,4 +75,6 @@ dependencies {
 
     // 네이버 지도
     implementation("com.naver.maps:map-sdk:3.23.3")
+    // 네이버 아이디로 로그인 (계정 연동 · 즐겨찾기 동기화)
+    implementation("com.navercorp.nid:oauth:5.10.0")
 }

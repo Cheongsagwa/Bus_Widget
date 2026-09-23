@@ -35,6 +35,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +61,8 @@ import com.cheon.ccbuswidget.data.model.FavoriteItem
 import com.cheon.ccbuswidget.data.model.RouteDetail
 import com.cheon.ccbuswidget.data.model.RouteKind
 import com.cheon.ccbuswidget.data.model.RouteStop
+import com.cheon.ccbuswidget.data.sync.FavoriteSync
+import com.cheon.ccbuswidget.feature.account.AccountActivity
 import com.cheon.ccbuswidget.feature.settings.SettingsActivity
 import com.cheon.ccbuswidget.ui.theme.Tokens
 import kotlinx.coroutines.async
@@ -186,13 +189,21 @@ internal fun MapScreen(
     // 더보기 메뉴
     var showMenu by remember { mutableStateOf(false) }
 
+    // 네이버 계정 동기화 — 앱을 켤 때 한 번 서버와 맞추고, 서버 것으로 바뀌면 목록을 다시 읽는다
+    LaunchedEffect(Unit) { FavoriteSync.init(context) }
+    val syncRevision by FavoriteSync.revision.collectAsState()
+    LaunchedEffect(syncRevision) {
+        if (syncRevision == 0) return@LaunchedEffect
+        if (favoritesDraft == null) favoriteItems = WidgetStore.getFavoriteItems(context)
+    }
+
     // 즐겨찾기 — 정류장 / 노선
     var favorite by remember { mutableStateOf(false) }
-    LaunchedEffect(stop.nodeId) {
+    LaunchedEffect(stop.nodeId, syncRevision) {
         favorite = stop.nodeId.isNotBlank() && WidgetStore.isFavorite(context, stop.nodeId)
     }
     var favoriteRoute by remember { mutableStateOf(false) }
-    LaunchedEffect(route?.routeId) {
+    LaunchedEffect(route?.routeId, syncRevision) {
         val id = route?.routeId
         favoriteRoute = id != null && WidgetStore.isFavoriteRoute(context, id)
     }
@@ -573,6 +584,7 @@ internal fun MapScreen(
                         expanded = routeExpanded,
                         onExpandedChange = { screen = if (it) Screen.RouteExpanded else Screen.Route },
                         onDismiss = closeSheet,
+                        routeId = r.routeId,
                         routeNo = r.routeNo,
                         routeType = r.routeType,
                         detail = routeDetail,
@@ -740,7 +752,10 @@ internal fun MapScreen(
                     visible = showMenu,
                     onDismiss = { showMenu = false },
                     onSettings = { showMenu = false; onOpenSettings() },
-                    onAccount = { Toast.makeText(context, "계정 설정은 준비 중입니다", Toast.LENGTH_SHORT).show() },
+                    onAccount = {
+                        showMenu = false
+                        context.startActivity(Intent(context, AccountActivity::class.java))
+                    },
                     onPlaceholder = { Toast.makeText(context, "준비 중인 기능입니다", Toast.LENGTH_SHORT).show() },
                     backdrop = favoritesBackdrop.takeIf { screen == Screen.Favorites }
                 )
