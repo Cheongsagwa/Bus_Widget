@@ -129,6 +129,11 @@ internal fun GlassSurface(
     tint: Color,
     modifier: Modifier = Modifier,
     blurRadius: Dp = Tokens.Glass.blurRadius,
+    /**
+     * false 면 뒤의 지도 블러를 그리지 않는다. 불투명한 색이 덮고 있어 어차피 안 보일 때
+     * (전체 화면으로 펼친 시트) 화면 전체 블러를 매 프레임 계산하지 않도록 쓴다.
+     */
+    drawBackdrop: Boolean = true,
     content: @Composable BoxScope.() -> Unit = {}
 ) {
     val backdrop = LocalMapBackdrop.current
@@ -149,51 +154,53 @@ internal fun GlassSurface(
             }
             .clip(shape)
     ) {
-        // 스냅샷(backdrop.image)은 아래 drawBehind 안에서만 읽는다.
-        // 여기(컴포지션 단계)에서 읽으면 스냅샷이 갱신될 때마다 초당 여덟 번씩
-        // 시트 전체가 리컴포지션되면서 화면이 깜빡인다. 그리기 단계에서 읽으면
-        // 다시 그리기만 일어난다.
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                // 블러 레이어 자체를 표면보다 크게 잡는다.
-                // 표면 크기에 딱 맞추면 테두리가 빈 픽셀을 끌어와 흐려지지 않는데,
-                // 50dp 짜리 원형 버튼은 거의 전부가 '테두리'라 블러가 없는 것처럼 보였다.
-                // 넘치는 부분은 바깥 Box 의 clip(shape) 가 잘라 준다.
-                .layout { measurable, constraints ->
-                    val w = constraints.maxWidth + padPx * 2
-                    val h = constraints.maxHeight + padPx * 2
-                    val placeable = measurable.measure(Constraints.fixed(w, h))
-                    layout(constraints.maxWidth, constraints.maxHeight) {
-                        placeable.place(-padPx, -padPx)
+        if (drawBackdrop) {
+            // 스냅샷(backdrop.image)은 아래 drawBehind 안에서만 읽는다.
+            // 여기(컴포지션 단계)에서 읽으면 스냅샷이 갱신될 때마다 초당 여덟 번씩
+            // 시트 전체가 리컴포지션되면서 화면이 깜빡인다. 그리기 단계에서 읽으면
+            // 다시 그리기만 일어난다.
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    // 블러 레이어 자체를 표면보다 크게 잡는다.
+                    // 표면 크기에 딱 맞추면 테두리가 빈 픽셀을 끌어와 흐려지지 않는데,
+                    // 50dp 짜리 원형 버튼은 거의 전부가 '테두리'라 블러가 없는 것처럼 보였다.
+                    // 넘치는 부분은 바깥 Box 의 clip(shape) 가 잘라 준다.
+                    .layout { measurable, constraints ->
+                        val w = constraints.maxWidth + padPx * 2
+                        val h = constraints.maxHeight + padPx * 2
+                        val placeable = measurable.measure(Constraints.fixed(w, h))
+                        layout(constraints.maxWidth, constraints.maxHeight) {
+                            placeable.place(-padPx, -padPx)
+                        }
                     }
-                }
-                .blur(
-                    radius = blurRadius,
-                    edgeTreatment = BlurredEdgeTreatment.Unbounded
-                )
-                .drawBehind {
-                    val image = backdrop.image ?: return@drawBehind
-                    val win = backdrop.windowSize
-                    if (win.width <= 0 || win.height <= 0) return@drawBehind
-
-                    // 스냅샷을 잘라 쓰지 않는다.
-                    // 화면 전체 크기로 늘린 뒤 이 노드의 위치만큼 밀어 그리고,
-                    // 넘치는 부분은 클리핑에 맡긴다.
-                    // (잘라내기 계산이 어긋나면 1픽셀이 늘어나 단색으로 보였다)
-                    drawImage(
-                        image = image,
-                        srcOffset = IntOffset.Zero,
-                        srcSize = IntSize(image.width, image.height),
-                        dstOffset = IntOffset(
-                            padPx - origin.x,
-                            padPx - origin.y
-                        ),
-                        dstSize = IntSize(win.width, win.height),
-                        filterQuality = FilterQuality.Low
+                    .blur(
+                        radius = blurRadius,
+                        edgeTreatment = BlurredEdgeTreatment.Unbounded
                     )
-                }
-        )
+                    .drawBehind {
+                        val image = backdrop.image ?: return@drawBehind
+                        val win = backdrop.windowSize
+                        if (win.width <= 0 || win.height <= 0) return@drawBehind
+
+                        // 스냅샷을 잘라 쓰지 않는다.
+                        // 화면 전체 크기로 늘린 뒤 이 노드의 위치만큼 밀어 그리고,
+                        // 넘치는 부분은 클리핑에 맡긴다.
+                        // (잘라내기 계산이 어긋나면 1픽셀이 늘어나 단색으로 보였다)
+                        drawImage(
+                            image = image,
+                            srcOffset = IntOffset.Zero,
+                            srcSize = IntSize(image.width, image.height),
+                            dstOffset = IntOffset(
+                                padPx - origin.x,
+                                padPx - origin.y
+                            ),
+                            dstSize = IntSize(win.width, win.height),
+                            filterQuality = FilterQuality.Low
+                        )
+                    }
+            )
+        }
 
         // Figma 의 반투명 색을 덮는다
         Box(modifier = Modifier.matchParentSize().background(tint))
@@ -254,6 +261,31 @@ internal fun GlassIconButton(
             modifier = Modifier
                 .align(Alignment.Center)
                 .size(iconSize)
+        )
+    }
+}
+
+/**
+ * 목록 위쪽 그라데이션 (Figma 90:2501 / 90:2494, 높이 44).
+ * 아래쪽 그라데이션과 반대로, 스크롤을 내리기 시작하면 나타나고 맨 위에 닿으면 사라진다.
+ */
+@Composable
+internal fun BoxScope.TopFade(visible: Boolean, surface: Color) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(),
+        exit = fadeOut(),
+        modifier = Modifier.align(Alignment.TopCenter)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(Tokens.Sheet.topFadeHeight)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(surface.copy(alpha = 1f), surface.copy(alpha = 0f))
+                    )
+                )
         )
     }
 }

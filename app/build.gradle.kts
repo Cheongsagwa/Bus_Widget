@@ -36,6 +36,9 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            // 디버그 키로 서명해서 ▶ 실행 버튼으로도 릴리스 빌드를 바로 깔 수 있게 한다.
+            // (Build Variants 창에서 app 을 release 로 바꾸면 됨. 스토어에 올릴 때는 이 줄을 실제 키로 바꿀 것)
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 

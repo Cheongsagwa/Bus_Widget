@@ -63,11 +63,15 @@ internal fun StopMorphSheet(
     isFavorite: Boolean,
     onRefresh: () -> Unit,
     onToggleFavorite: () -> Unit,
-    onRouteClick: (RouteRow) -> Unit
+    onRouteClick: (RouteRow) -> Unit,
+    /** 축소창이 되었는지 (현위치 버튼 자리를 옮기는 데 쓴다) */
+    onMinimizedChange: (Boolean) -> Unit = {}
 ) {
     // 원래 시트: 손잡이(12+5) 아래 유형 칩 줄까지 16 → 손잡이 줄 29 기준으로 남는 만큼
     val collapsedHeaderTop = Tokens.Sheet.grabberTopPadding + Tokens.Sheet.grabberHeight +
         Tokens.Sheet.typeRowTop - Tokens.Sheet.morphHandleHeight
+    // 떠 있는 새로고침 버튼 뒤로 노선 목록이 흐리게 비치도록 (검색바와 같은 방식)
+    val blur = rememberBlurBehind()
     MorphingSheet(
         expanded = expanded,
         onExpandedChange = onExpandedChange,
@@ -75,11 +79,14 @@ internal fun StopMorphSheet(
         expandedTint = expandedSurface(),
         handleDescription = "정류장 창 손잡이",
         expandedHandleHeight = Tokens.Expanded.topBarHeight,
+        // 아래로 쓸어내리면 먼저 헤더만 남은 축소창이 되고, 한 번 더 내리면 닫힌다
+        minimizedHeight = Tokens.Sheet.minimizedHeight,
+        onMinimizedChange = onMinimizedChange,
         onDismiss = onDismiss,
         handle = { p ->
             MorphTopBar(p, isFavorite, onBack = { onExpandedChange(false) }, onToggleFavorite = onToggleFavorite)
         },
-        overlay = { p -> MorphRefreshButton(p, onRefresh) }
+        overlay = { p -> MorphRefreshButton(p, onRefresh, blur = blur) }
     ) { p, tint ->
         val actionsAlpha = collapsedOnlyAlpha(p)
         StopHeader(
@@ -94,14 +101,17 @@ internal fun StopMorphSheet(
             // 펼칠수록 헤더의 새로고침·즐겨찾기는 사라지고 떠 있는 버튼이 대신한다
             showActions = actionsAlpha > 0f,
             actionsAlpha = actionsAlpha,
+            refreshAlpha = 1f - LocalSheetMinimize.current,
             onRefresh = onRefresh,
             onToggleFavorite = onToggleFavorite
         )
 
+        // 축소창(Figma 90:2723)에는 헤더만 남는다 — 구분선·노선 목록은 줄어드는 동안 빠르게 사라진다
+        val listAlpha = minimizedListAlpha(LocalSheetMinimize.current)
         HorizontalDivider(
             modifier = Modifier.padding(
                 top = lerp(Tokens.Sheet.stopDividerTop, Tokens.Expanded.stopDividerTop, p)
-            ),
+            ).alpha(listAlpha),
             color = colorResource(R.color.divider)
         )
 
@@ -112,7 +122,7 @@ internal fun StopMorphSheet(
             horizontalPadding = lerp(Tokens.Sheet.stopContentPadding, Tokens.Expanded.gridPadding, p),
             endPadding = lerp(Tokens.Sheet.stopContentPadding, Tokens.Expanded.gridPaddingEnd, p),
             fadeSurface = tint,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).alpha(listAlpha).blurBehindContent(blur, tint),
             onRouteClick = onRouteClick
         )
     }
@@ -161,6 +171,8 @@ internal fun StopHeader(
     showActions: Boolean = true,
     /** 모핑 중 헤더 버튼이 흐려지는 정도 */
     actionsAlpha: Float = 1f,
+    /** 새로고침만 따로 흐리게 할 때 (축소창에서는 새로고침이 없다 — Figma 90:2723). 자리는 그대로 둔다 */
+    refreshAlpha: Float = 1f,
     onRefresh: () -> Unit,
     onToggleFavorite: () -> Unit
 ) {
@@ -205,6 +217,7 @@ internal fun StopHeader(
                   modifier = Modifier.alpha(actionsAlpha),
                   verticalAlignment = Alignment.CenterVertically
               ) {
+                Box(Modifier.alpha(refreshAlpha)) {
                 if (loading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(Tokens.Misc.spinnerSize),
@@ -219,8 +232,9 @@ internal fun StopHeader(
                         modifier = Modifier
                             .size(Tokens.Header.iconSize)
                             .clip(CircleShape)
-                            .clickable { onRefresh() }
+                            .clickable(enabled = refreshAlpha > 0.5f) { onRefresh() }
                     )
+                }
                 }
 
                 Spacer(modifier = Modifier.width(Tokens.Sheet.headerIconGap))
@@ -291,6 +305,7 @@ internal fun StopRouteGrid(
                         StopRouteCell(row) { onRouteClick(row) }
                     }
                 }
+                TopFade(visible = gridState.canScrollBackward, surface = fadeSurface)
                 BottomFade(visible = gridState.canScrollForward, surface = fadeSurface)
             }
         }

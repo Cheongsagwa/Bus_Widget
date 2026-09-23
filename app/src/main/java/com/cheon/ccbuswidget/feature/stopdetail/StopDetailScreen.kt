@@ -449,6 +449,10 @@ internal fun MapScreen(
     BackHandler(enabled = showMenu) { showMenu = false }
 
     val sheetVisible = screen == Screen.Stop || screen == Screen.Route
+    /** 정류장·노선 시트가 헤더만 남은 축소창인지 (현위치 버튼을 시트 윗변에 맞춰 내린다) */
+    var sheetMinimized by remember { mutableStateOf(false) }
+    // 다른 시트로 바뀌거나 닫히면 새 시트는 기본 크기로 뜬다
+    LaunchedEffect(sheetVisible, stop.nodeId, route?.routeId) { sheetMinimized = false }
 
     /**
      * 검색창 아래에 깔려 있는 화면. 검색창이 페이드로 덮이고 걷히는 동안
@@ -497,15 +501,20 @@ internal fun MapScreen(
             } else {
                 // API 키를 저장하고 돌아왔을 때 인증 실패한 이전 지도 객체를 재사용하지 않는다.
                 androidx.compose.runtime.key(naverKey) {
+                // 지도에 그릴 것은 '지금 떠 있는 시트' 기준으로 정한다 (펼침 여부 · 검색창과 무관).
+                // 예전에는 노선 창을 펼치는 순간 노선 경로를 지우고 정류장으로 카메라를 옮겼다가,
+                // 접으면 다시 그리고 노선 전체로 옮기느라 모핑 애니메이션과 겹쳐 버벅였다.
+                // 이제 펼치고 접는 동안 지도는 그대로 두고 시트만 움직인다.
+                val mapMain = underScreen == Screen.Main || underScreen == Screen.Favorites
                 NaverMapPane(
                     keyId = naverKey,
-                    stop = if (screen == Screen.Main || screen == Screen.Favorites) BusStop("", "") else stop,
-                    routeStops = if (screen == Screen.Route) routeStops else emptyList(),
-                    buses = if (screen == Screen.Route) buses else emptyList(),
+                    stop = if (mapMain) BusStop("", "") else stop,
+                    routeStops = if (routeMode) routeStops else emptyList(),
+                    buses = if (routeMode) buses else emptyList(),
                     routeKind = kind,
-                    nearbyStops = if (screen == Screen.Main || screen == Screen.Favorites) nearby else emptyList(),
+                    nearbyStops = if (mapMain) nearby else emptyList(),
                     onStopPick = { picked -> openStop(picked) },
-                    sheetVisible = sheetVisible,
+                    sheetVisible = stopMode || routeMode,
                     // 검색창이 덮고 있으면 지도와 스냅샷을 쉬게 한다.
                     // 확장창은 모핑 전환 동안 블러할 지도가 필요해서 계속 돌린다 (즐겨찾기와 같음).
                     active = screen != Screen.Search,
@@ -571,7 +580,8 @@ internal fun MapScreen(
                         isFavorite = favorite,
                         onRefresh = { scope.launch { loadStop() } },
                         onToggleFavorite = { favorite = WidgetStore.toggleFavorite(context, stop) },
-                        onRouteClick = { row -> openRoute(row.routeId, row.routeNo, row.routeType) }
+                        onRouteClick = { row -> openRoute(row.routeId, row.routeNo, row.routeType) },
+                        onMinimizedChange = { sheetMinimized = it }
                     )
                 }
             }
@@ -603,7 +613,8 @@ internal fun MapScreen(
                         },
                         onStopClick = { rs ->
                             openStop(BusStop(rs.nodeId, rs.nodeName, rs.nodeNo, rs.lat, rs.lng))
-                        }
+                        },
+                        onMinimizedChange = { sheetMinimized = it }
                     )
                 }
             }
@@ -680,7 +691,8 @@ internal fun MapScreen(
                 myLocationSpec, label = "현위치 오른쪽 여백"
             )
             val myLocationBottom by androidx.compose.animation.core.animateDpAsState(
-                if (sheetVisible) navBarInset + Tokens.Sheet.peekHeight + Tokens.MyLocation.gapAboveSheet
+                if (sheetVisible) navBarInset + Tokens.MyLocation.gapAboveSheet +
+                    (if (sheetMinimized) Tokens.Sheet.minimizedHeight else Tokens.Sheet.peekHeight)
                 else toolbarBottom + Tokens.Toolbar.height + Tokens.MyLocation.gapAboveToolbar,
                 myLocationSpec, label = "현위치 아래 여백"
             )

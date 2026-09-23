@@ -24,11 +24,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import com.cheon.ccbuswidget.R
 import com.cheon.ccbuswidget.data.local.Timetable
 import com.cheon.ccbuswidget.data.local.TimetableSection
@@ -105,13 +114,19 @@ internal fun RouteTimetable(
                         }
                     }
                 }
+                TopFade(visible = listState.canScrollBackward, surface = fadeSurface)
                 BottomFade(visible = listState.canScrollForward, surface = fadeSurface)
             }
         }
     }
 }
 
-/** 표 하나: 회색 머리줄(제목) + 5칸 바둑판 본문 (Figma 85:1324) */
+/**
+ * 표 하나 (Figma 81:1684 · 85:1324).
+ * 머리줄: 높이 32, 위 모서리 15, 15sp Bold.
+ * 본문: 5% 배경 + 좌·우·아래 5dp #D9D9D9 테두리, 아래 모서리 15. 칸은 14sp SemiBold,
+ *       시각 뒤의 표시("(편)" 등)는 8sp 로 작게. 두 번째 칸부터 한 칸 걸러 회색.
+ */
 @Composable
 private fun TimetableCard(section: TimetableSection) {
     val corner = Tokens.Timetable.corner
@@ -136,14 +151,30 @@ private fun TimetableCard(section: TimetableSection) {
         }
         val columns = Tokens.Timetable.columns
         val cellColor = colorResource(R.color.timetable_cell)
+        val bodyColor = colorResource(R.color.timetable_body)
         val textColor = colorResource(R.color.timetable_text)
+        val border = Tokens.Timetable.borderWidth
         Column(
             Modifier.fillMaxWidth()
-                .background(
-                    colorResource(R.color.timetable_body),
-                    RoundedCornerShape(bottomStart = corner, bottomEnd = corner)
-                )
-                .padding(Tokens.Timetable.bodyPadding)
+                .drawBehind {
+                    val b = border.toPx()
+                    val r = corner.toPx()
+                    val outer = Path().apply {
+                        addRoundRect(RoundRect(0f, 0f, size.width, size.height,
+                            bottomLeftCornerRadius = CornerRadius(r, r),
+                            bottomRightCornerRadius = CornerRadius(r, r)))
+                    }
+                    val inner = Path().apply {
+                        val ir = (r - b).coerceAtLeast(0f)
+                        addRoundRect(RoundRect(b, 0f, size.width - b, size.height - b,
+                            bottomLeftCornerRadius = CornerRadius(ir, ir),
+                            bottomRightCornerRadius = CornerRadius(ir, ir)))
+                    }
+                    drawPath(inner, bodyColor)
+                    // 테두리 = 바깥 모양 - 안쪽 모양 (위쪽은 머리줄과 붙어 있어 비운다)
+                    drawPath(Path.combine(PathOperation.Difference, outer, inner), cellColor)
+                }
+                .padding(start = border, end = border, bottom = border)
         ) {
             // 시간이 하나도 없으면 빈 줄 하나만 두어 표 모양을 유지한다
             val rows = section.times.chunked(columns).ifEmpty { listOf(emptyList()) }
@@ -151,8 +182,8 @@ private fun TimetableCard(section: TimetableSection) {
                 Row(Modifier.fillMaxWidth().height(Tokens.Timetable.cellHeight)) {
                     for (c in 0 until columns) {
                         val time = rowTimes.getOrNull(c)
-                        // Figma: 첫 칸부터 한 칸 걸러 회색 (바둑판). 빈 칸은 칠하지 않는다.
-                        val filled = time != null && (r + c) % 2 == 0
+                        // Figma: 두 번째 칸부터 한 칸 걸러 회색 (바둑판). 빈 칸은 칠하지 않는다.
+                        val filled = time != null && (r + c) % 2 == 1
                         Box(
                             Modifier.weight(1f).height(Tokens.Timetable.cellHeight)
                                 .then(if (filled) Modifier.background(cellColor) else Modifier),
@@ -160,20 +191,35 @@ private fun TimetableCard(section: TimetableSection) {
                         ) {
                             if (time != null) {
                                 Text(
-                                    time,
+                                    timeLabel(time),
                                     fontSize = Tokens.Timetable.cellText,
                                     lineHeight = Tokens.Timetable.cellText,
                                     fontWeight = FontWeight.SemiBold,
                                     color = textColor,
                                     textAlign = TextAlign.Center,
                                     maxLines = 1,
-                                    softWrap = false
+                                    softWrap = false,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+private val timePrefix = Regex("""^\d{1,2}:\d{2}""")
+
+/** "06:40(편)" → "06:40" 은 보통 크기, 뒤의 "(편)" 은 작게 (Figma: 14sp / 8sp) */
+private fun timeLabel(token: String): AnnotatedString {
+    val time = timePrefix.find(token)?.value ?: return AnnotatedString(token)
+    return buildAnnotatedString {
+        append(time)
+        val suffix = token.substring(time.length)
+        if (suffix.isNotEmpty()) {
+            withStyle(SpanStyle(fontSize = Tokens.Timetable.cellSuffixText)) { append(suffix) }
         }
     }
 }

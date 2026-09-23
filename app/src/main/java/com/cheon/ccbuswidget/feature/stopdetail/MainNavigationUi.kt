@@ -2,14 +2,18 @@ package com.cheon.ccbuswidget.feature.stopdetail
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -38,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
@@ -87,9 +92,20 @@ internal fun MainFloatingToolbar(
 
 @Composable
 private fun RowScope.ToolbarItem(label: String, icon: Int, selected: Boolean?, onClick: () -> Unit) {
-    val interaction = if (selected == null) Modifier.clickable(role = Role.Button, onClick = onClick)
-        else Modifier.selectable(selected, role = Role.Tab, onClick = onClick)
-    Column(Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(Tokens.Toolbar.itemCorner)).then(interaction),
+    // 누르고 있는 동안 그 칸이 살짝 작아졌다가 떼면 돌아온다 (눌리는 느낌)
+    val source = remember { MutableInteractionSource() }
+    val pressed by source.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        if (pressed) Tokens.Toolbar.pressedScale else 1f,
+        tween(if (pressed) Tokens.Motion.fast else Tokens.Motion.medium, easing = Tokens.Motion.easing),
+        label = "툴바 눌림"
+    )
+    val ripple = LocalIndication.current
+    val interaction = if (selected == null) Modifier.clickable(source, ripple, role = Role.Button, onClick = onClick)
+        else Modifier.selectable(selected, source, ripple, role = Role.Tab, onClick = onClick)
+    Column(Modifier.weight(1f).fillMaxHeight()
+        .graphicsLayer { scaleX = scale; scaleY = scale }
+        .clip(RoundedCornerShape(Tokens.Toolbar.itemCorner)).then(interaction),
         horizontalAlignment = Alignment.CenterHorizontally) {
         Box(Modifier.height(Tokens.Toolbar.iconBoxHeight).fillMaxWidth(), contentAlignment = Alignment.Center) {
             Icon(painterResource(icon), null, Modifier.size(Tokens.Toolbar.iconSize), tint = colorResource(R.color.glass_on_surface))

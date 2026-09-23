@@ -44,6 +44,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,25 +52,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.TileMode
-import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.layer.drawLayer
-import androidx.compose.ui.graphics.rememberGraphicsLayer
-import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -115,7 +103,9 @@ internal fun RouteMorphSheet(
     isFavorite: Boolean,
     onRefresh: () -> Unit,
     onToggleFavorite: () -> Unit,
-    onStopClick: (RouteStop) -> Unit
+    onStopClick: (RouteStop) -> Unit,
+    /** 축소창이 되었는지 (현위치 버튼 자리를 옮기는 데 쓴다) */
+    onMinimizedChange: (Boolean) -> Unit = {}
 ) {
     // 원래 시트: 손잡이(12+5) 아래 헤더까지 12 → 손잡이 줄 29 기준으로 남는 만큼
     val collapsedHeaderTop = (Tokens.Sheet.grabberTopPadding + Tokens.Sheet.grabberHeight +
@@ -137,25 +127,9 @@ internal fun RouteMorphSheet(
     // 시간표를 봤다가 돌아와도 타임라인 스크롤 위치가 그대로 남도록 밖에서 들고 있는다
     val timelineState = rememberLazyListState()
 
-    // ---- [시간표 보기] 바 뒤 블러 (검색창의 검색바와 같은 방식) ----
-    // 본문(타임라인 + 아래 '더 있음' 그라데이션)을 레이어에 한 번 담아 그대로 그리고,
-    // 바가 놓인 자리에만 같은 그림을 흐리게 해서 한 번 더 깐다.
-    // 흐린 복사본에는 불투명 배경도 넣는다. 투명한 글자만 흐리게 해서 올리면
-    // 밑의 선명한 글자가 반투명한 바를 그대로 뚫고 보여 블러가 없는 것처럼 보인다.
-    val sharpLayer = rememberGraphicsLayer()
-    val blurLayer = rememberGraphicsLayer()
-    val blurPx = with(LocalDensity.current) { Tokens.Glass.blurRadius.toPx() }
-    val blurEffect = remember(blurPx) { BlurEffect(blurPx, blurPx, TileMode.Decal) }
-    var contentCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
-    var barCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
-    var barRect by remember { mutableStateOf<Rect?>(null) }
-    fun updateBarRect() {
-        val content = contentCoordinates
-        val bar = barCoordinates
-        barRect = if (content?.isAttached == true && bar?.isAttached == true) {
-            content.localBoundingBoxOf(bar, clipBounds = false)
-        } else null
-    }
+    // ---- [시간표 보기] 바 · 새로고침 버튼 뒤 블러 (검색창의 검색바와 같은 방식, GlassBlurBehind.kt) ----
+    // 본문(타임라인 + 아래 '더 있음' 그라데이션)을 그대로 그리고, 버튼 자리에만 흐린 복사본을 깐다.
+    val blur = rememberBlurBehind()
     val barShown = expanded && !showTimetable
     // 흐린 복사본도 바와 같이 나타나고 사라진다
     val barBlurAlpha = animateFloatAsState(
@@ -179,6 +153,9 @@ internal fun RouteMorphSheet(
         expandedTint = expandedSurface(),
         handleDescription = "노선 창 손잡이",
         expandedHandleHeight = Tokens.Expanded.topBarHeight,
+        // 아래로 쓸어내리면 먼저 헤더만 남은 축소창이 되고, 한 번 더 내리면 닫힌다 (Figma 90:2852)
+        minimizedHeight = Tokens.Sheet.minimizedHeight,
+        onMinimizedChange = onMinimizedChange,
         onDismiss = onDismiss,
         handle = { p ->
             MorphTopBar(p, isFavorite,
@@ -189,10 +166,14 @@ internal fun RouteMorphSheet(
             // 시간표 화면(Figma 81:937)에는 새로고침 버튼이 없다
             if (refreshAlpha > 0f) {
                 Box(Modifier.matchParentSize().graphicsLayer { alpha = refreshAlpha }) {
-                    MorphRefreshButton(p, onRefresh)
+                    MorphRefreshButton(p, onRefresh, blur = blur, extraAlpha = refreshAlpha)
                 }
             }
             val barSpec = tween<Float>(Tokens.Motion.medium, easing = Tokens.Motion.easing)
+            // 흐린 복사본도 바와 같이 나타나고 사라진다 (펼침 정도 × 바 등장)
+            val barAlpha = rememberUpdatedState(
+                barBlurAlpha.value * ((p - 0.5f) * 2f).coerceIn(0f, 1f) * morphSettledAlpha(p)
+            )
             AnimatedVisibility(
                 visible = barShown,
                 modifier = Modifier.align(Alignment.BottomCenter)
@@ -210,10 +191,7 @@ internal fun RouteMorphSheet(
                     onClick = { showTimetable = true },
                     // 블러는 본문 쪽에서 이 자리에 깔아 주므로 바는 반투명 색만 칠한다
                     blurBehind = false,
-                    modifier = Modifier.onGloballyPositioned {
-                        barCoordinates = it
-                        updateBarRect()
-                    }
+                    modifier = Modifier.blurBehindHole(blur, "timetable", barAlpha)
                 )
             }
         }
@@ -235,8 +213,11 @@ internal fun RouteMorphSheet(
             onToggleFavorite = onToggleFavorite
         )
 
+        // 축소창(Figma 90:2852)에는 헤더만 남는다 — 구분선·정류장 목록은 줄어드는 동안 빠르게 사라진다
+        val listAlpha = minimizedListAlpha(LocalSheetMinimize.current)
         HorizontalDivider(
-            modifier = Modifier.padding(top = lerp(Tokens.Sheet.dividerTop, Tokens.Expanded.routeDividerTop, p)),
+            modifier = Modifier.padding(top = lerp(Tokens.Sheet.dividerTop, Tokens.Expanded.routeDividerTop, p))
+                .alpha(listAlpha),
             color = colorResource(R.color.divider)
         )
 
@@ -244,34 +225,11 @@ internal fun RouteMorphSheet(
         // 펼치면 목록이 내비게이션 바 · [시간표 보기] 바 뒤까지 이어지도록 아래로 늘린다. (Figma 40:186)
         val underNav = lerp(0.dp, nav, p)
         val timelineBottom = lerp(0.dp, barBottom + Tokens.ActionBar.height + Tokens.Timetable.barClearance, p)
-        val blurBackground = tint
-        val barAlphaByMorph = ((p - 0.5f) * 2f).coerceIn(0f, 1f)
         AnimatedContent(
             targetState = showTimetable,
             modifier = Modifier.weight(1f).fillMaxWidth().extendBottom(underNav)
-                .onGloballyPositioned {
-                    contentCoordinates = it
-                    updateBarRect()
-                }
-                .drawWithContent {
-                    // drawContent() 는 한 번만 부를 수 있어서 레이어에 담아 두 번 그린다
-                    sharpLayer.record { this@drawWithContent.drawContent() }
-                    drawLayer(sharpLayer)
-
-                    val r = barRect ?: return@drawWithContent
-                    val alpha = barBlurAlpha.value * barAlphaByMorph
-                    if (alpha <= 0f) return@drawWithContent
-                    blurLayer.renderEffect = blurEffect
-                    blurLayer.alpha = alpha
-                    blurLayer.record {
-                        // 시트 배경색까지 함께 흐리게 해서 밑의 선명한 글자를 덮는다
-                        drawRect(blurBackground)
-                        drawLayer(sharpLayer)
-                    }
-                    clipPath(Path().apply {
-                        addRoundRect(RoundRect(r, CornerRadius(r.height / 2f, r.height / 2f)))
-                    }) { drawLayer(blurLayer) }
-                },
+                .alpha(listAlpha)
+                .blurBehindContent(blur, tint),
             transitionSpec = {
                 fadeIn(tween(Tokens.Motion.medium, easing = Tokens.Motion.easing)) togetherWith
                     fadeOut(tween(Tokens.Motion.fast, easing = Tokens.Motion.easing))
@@ -524,6 +482,7 @@ internal fun RouteTimeline(
                     }
                 }
             }
+            TopFade(visible = listState.canScrollBackward, surface = fadeSurface)
             BottomFade(visible = listState.canScrollForward, surface = fadeSurface)
         }
     }

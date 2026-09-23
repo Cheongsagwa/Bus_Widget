@@ -6,9 +6,9 @@ import androidx.compose.ui.unit.sp
 
 /**
  * ┌──────────────────────────────────────────────────────────────┐
- * │  앱 화면(Compose)의 크기·간격·글자 크기를 모아 둔 곳입니다.    │
- * │  Figma 의 px 값을 그대로 dp, 글자는 sp 로 넣으면 됩니다.       │
- * │                                                              │
+ * │  앱 화면(Compose)의 크기·간격·글자 크기를 모아 둔 곳입니다.        │
+ * │  Figma 의 px 값을 그대로 dp, 글자는 sp 로 넣으면 됩니다.          │
+ * │                                                             │
  * │  · 색상       → res/values/colors.xml                        │
  * │  · 위젯 치수  → res/values/dimens.xml                        │
  * └──────────────────────────────────────────────────────────────┘
@@ -52,11 +52,21 @@ object Tokens {
 
         /** 목록 아래쪽 '더 있음' 그라데이션 높이 */
         val fadeHeight = 56.dp
+        /** 목록 위쪽 그라데이션 높이 — 스크롤을 내리면 나타난다 (Figma 90:2501 / 90:2494) */
+        val topFadeHeight = 44.dp
+
+        /**
+         * 축소창 높이 (Figma 90:2723 / 90:2852 — 손잡이 19 + 헤더 94 + 아래 23).
+         * 기본 시트를 아래로 쓸어내리면 헤더만 남는 이 크기로 줄고, 여기서 한 번 더 내리면 닫힌다.
+         */
+        val minimizedHeight = 136.dp
 
         /** 카드 맨 위 손잡이 */
         val grabberWidth = 36.dp
         val grabberHeight = 5.dp
         val grabberTopPadding = 12.dp
+        /** 그랩바 터치 영역을 손잡이 줄 아래로 이만큼 더 늘린다 (보이는 모양은 그대로) */
+        val grabberTouchExtra = 10.dp
 
         /** 손잡이 ↔ 헤더 (노선 시트, Figma 14 → 29) */
         val headerTop = 12.dp
@@ -115,6 +125,8 @@ object Tokens {
         val bottomMargin = 27.dp
         /** 나타날 때 이 크기에서 커지고, 사라질 때 이 크기로 줄어든다 */
         const val hiddenScale = 0.6f
+        /** 버튼을 누르고 있는 동안 줄어드는 크기 */
+        const val pressedScale = 0.9f
     }
 
     /**
@@ -375,18 +387,23 @@ object Tokens {
         /** 구분선 ↔ 첫 표 (Figma 174 → 208) */
         val topPadding = 34.dp
         val sectionGap = 27.dp
-        val corner = 10.dp
-        val headerHeight = 27.dp
-        val headerText = 12.sp
-        val bodyPadding = 5.dp
+        /** 표 모서리 (Figma 81:1684 — 15) */
+        val corner = 15.dp
+        val headerHeight = 32.dp
+        val headerText = 15.sp
+        /** 본문 좌·우·아래 테두리 두께 (#D9D9D9, 위쪽은 머리줄과 붙어 있어 없음) */
+        val borderWidth = 5.dp
         const val columns = 5
-        val cellHeight = 18.dp
-        val cellText = 12.sp
+        /** 칸 높이 (Figma 본문 124 - 테두리 5 = 119 → 6줄) */
+        val cellHeight = 20.dp
+        val cellText = 14.sp
+        /** 시각 뒤에 붙은 표시("(편)", "s" 등)는 작게 */
+        val cellSuffixText = 8.sp
         val noteText = 12.sp
         /** 목록 맨 아래 여백 (내비게이션 바 위) */
         val bottomPadding = 40.dp
-        /** 노선 타임라인 마지막 정류장 ↔ [시간표 보기] 바 윗변 사이 여유 */
-        val barClearance = 16.dp
+        /** 노선 타임라인 마지막 정류장 ↔ [시간표 보기] 바 윗변 사이 여유 (Figma 40:186 — 바로 맞닿게) */
+        val barClearance = 0.dp
     }
 
     /** 지도 오버레이 */
