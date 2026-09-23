@@ -4,14 +4,14 @@
  * 앱이 네이버 로그인으로 받은 access token 을 Authorization 헤더에 실어 보내면,
  * 네이버에 그 토큰이 누구 것인지 물어보고(회원 id), 그 id 칸에 즐겨찾기를 저장/조회한다.
  *
- *   GET    /favorites   → 저장된 즐겨찾기 ({stops, routes, order, updatedAt})
- *   PUT    /favorites   → 즐겨찾기 저장 (본문: {stops, routes, order})
+ *   GET    /favorites   → 저장된 즐겨찾기 · 검색 기록 ({stops, routes, order, history, updatedAt})
+ *   PUT    /favorites   → 저장 (본문: {stops, routes, order, history})
  *   DELETE /favorites   → 저장된 즐겨찾기 삭제 (계정 연결 해제 시)
  *
  * 네이버 회원 id 는 앱마다 다르게 발급되므로, 다른 앱에서 받은 토큰으로는 이 앱 사용자의 칸을 읽을 수 없다.
  */
 
-const EMPTY = { stops: [], routes: [], order: [], updatedAt: 0 };
+const EMPTY = { stops: [], routes: [], order: [], history: [], updatedAt: 0 };
 const MAX_BODY = 100_000; // 즐겨찾기 JSON 최대 크기 (넉넉하게 100KB)
 const MAX_ITEMS = 500;
 
@@ -54,6 +54,7 @@ export default {
           stops: strings(data.stops),
           routes: strings(data.routes),
           order: strings(data.order),
+          history: strings(data.history).slice(0, 50),
           updatedAt: Date.now(),
         };
         await env.FAVORITES.put(key, JSON.stringify(clean));

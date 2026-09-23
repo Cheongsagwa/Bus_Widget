@@ -213,7 +213,9 @@ object WidgetStore {
     data class FavoritesSnapshot(
         val stops: Set<String>,
         val routes: Set<String>,
-        val order: List<String>
+        val order: List<String>,
+        /** 검색 기록 원본 줄 (최근 것이 앞) */
+        val history: List<String> = emptyList()
     ) {
         val isEmpty: Boolean get() = stops.isEmpty() && routes.isEmpty()
     }
@@ -223,7 +225,8 @@ object WidgetStore {
         return FavoritesSnapshot(
             stops = p.getStringSet(KEY_FAVORITES, emptySet()).orEmpty().toSet(),
             routes = p.getStringSet(KEY_FAVORITE_ROUTES, emptySet()).orEmpty().toSet(),
-            order = readOrder(context)
+            order = readOrder(context),
+            history = rawHistory(context)
         )
     }
 
@@ -233,12 +236,14 @@ object WidgetStore {
             putStringSet(KEY_FAVORITES, snapshot.stops)
             putStringSet(KEY_FAVORITE_ROUTES, snapshot.routes)
             putString(KEY_FAVORITE_ORDER, snapshot.order.joinToString("\n"))
+            putString(KEY_SEARCH_HISTORY, snapshot.history.take(SEARCH_HISTORY_MAX).joinToString("\n"))
         }
     }
 
-    /** 즐겨찾기 관련 값이 바뀌었는지 (동기화가 이 키들만 지켜본다) */
+    /** 동기화 대상(즐겨찾기 · 검색 기록) 값이 바뀌었는지 (동기화가 이 키들만 지켜본다) */
     fun isFavoritesKey(key: String?): Boolean =
-        key == KEY_FAVORITES || key == KEY_FAVORITE_ROUTES || key == KEY_FAVORITE_ORDER
+        key == KEY_FAVORITES || key == KEY_FAVORITE_ROUTES || key == KEY_FAVORITE_ORDER ||
+            key == KEY_SEARCH_HISTORY
 
     /** 즐겨찾기가 바뀔 때 알림을 받는다. [listener] 는 호출하는 쪽이 계속 들고 있어야 한다. */
     fun registerChangeListener(
@@ -249,7 +254,7 @@ object WidgetStore {
     // ---- 검색 기록 --------------------------------------------------------
 
     private const val KEY_SEARCH_HISTORY = "search_history_v2"
-    private const val SEARCH_HISTORY_MAX = 20
+    const val SEARCH_HISTORY_MAX = 20
 
     /**
      * 검색에서 실제로 골랐던 항목들. 가장 최근 것이 앞에 온다.

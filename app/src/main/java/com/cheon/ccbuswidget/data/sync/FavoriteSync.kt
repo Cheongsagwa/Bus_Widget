@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * 즐겨찾기 ↔ 동기화 서버(sync-server, Cloudflare Workers).
+ * 즐겨찾기 · 검색 기록 ↔ 동기화 서버(sync-server, Cloudflare Workers).
  *
  * - 로그인 직후 · 앱을 켤 때: 서버 것을 받아 이 기기 것과 합친 뒤 다시 올린다.
  *   (다시 깐 앱은 비어 있으므로 서버 것이 그대로 돌아온다)
@@ -120,18 +120,31 @@ object FavoriteSync {
      * 한쪽이 비어 있으면 다른 쪽을 그대로 쓴다.
      */
     internal fun merge(local: FavoritesSnapshot, remote: FavoritesSnapshot): FavoritesSnapshot {
-        if (remote.isEmpty) return local
-        if (local.isEmpty) return remote
-        fun union(a: Set<String>, b: Set<String>): Set<String> {
-            val ids = a.map { it.substringBefore("|") }.toSet()
-            return a + b.filterNot { it.substringBefore("|") in ids }
+        // 검색 기록: 이 기기 것(최근 것)을 앞에, 서버에만 있는 것을 뒤에 붙여 20개까지
+        // 같은 정류장·노선은 "S|nodeId" / "R|routeId" 로 가려 한 번만 남긴다
+        val seen = local.history.map { it.historyId() }.toSet()
+        val history = (local.history + remote.history.filterNot { it.historyId() in seen })
+            .take(WidgetStore.SEARCH_HISTORY_MAX)
+
+        val favorites = when {
+            remote.isEmpty -> local
+            local.isEmpty -> remote
+            else -> {
+                fun union(a: Set<String>, b: Set<String>): Set<String> {
+                    val ids = a.map { it.substringBefore("|") }.toSet()
+                    return a + b.filterNot { it.substringBefore("|") in ids }
+                }
+                FavoritesSnapshot(
+                    stops = union(local.stops, remote.stops),
+                    routes = union(local.routes, remote.routes),
+                    order = local.order + remote.order.filterNot { it in local.order }
+                )
+            }
         }
-        return FavoritesSnapshot(
-            stops = union(local.stops, remote.stops),
-            routes = union(local.routes, remote.routes),
-            order = local.order + remote.order.filterNot { it in local.order }
-        )
+        return favorites.copy(history = history)
     }
+
+    private fun String.historyId(): String = split("|").take(2).joinToString("|")
 
     // ---- 서버 요청 -----------------------------------------------------------
 
@@ -140,7 +153,8 @@ object FavoriteSync {
         return FavoritesSnapshot(
             stops = o.optJSONArray("stops").strings().toSet(),
             routes = o.optJSONArray("routes").strings().toSet(),
-            order = o.optJSONArray("order").strings()
+            order = o.optJSONArray("order").strings(),
+            history = o.optJSONArray("history").strings()
         )
     }
 
@@ -149,6 +163,7 @@ object FavoriteSync {
             .put("stops", JSONArray(s.stops.toList()))
             .put("routes", JSONArray(s.routes.toList()))
             .put("order", JSONArray(s.order))
+            .put("history", JSONArray(s.history))
             .toString()
         call(context) { it.put(body.toRequestBody(jsonType)) }
     }
