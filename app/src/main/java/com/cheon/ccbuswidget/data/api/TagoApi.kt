@@ -1,6 +1,7 @@
 package com.cheon.ccbuswidget.data.api
 
 import android.content.Context
+import com.cheon.ccbuswidget.data.api.TagoApi.REALTIME_TTL
 import com.cheon.ccbuswidget.data.api.TagoApi.cachedItems
 import com.cheon.ccbuswidget.data.api.TagoApi.prefetch
 import com.cheon.ccbuswidget.data.model.BusArrival
@@ -170,7 +171,9 @@ object TagoApi {
     suspend fun arrivals(
         serviceKey: String,
         cityCode: String,
-        nodeId: String
+        nodeId: String,
+        /** true 면 잠깐 저장해 둔 결과를 쓰지 않고 서버에서 새로 받는다 (새로고침 버튼) */
+        fresh: Boolean = false
     ): List<BusArrival> = withContext(Dispatchers.IO) {
         val url = urlBuilder("$ARRIVAL_SERVICE/getSttnAcctoArvlPrearngeInfoList", serviceKey)
             .addQueryParameter("cityCode", cityCode)
@@ -180,7 +183,7 @@ object TagoApi {
             .addQueryParameter("pageNo", "1")
             .build()
 
-        items(get(url)).mapNotNull { o ->
+        realtimeItems(url, fresh).mapNotNull { o ->
             val no = o.optString("routeno").takeIf { it.isNotBlank() } ?: return@mapNotNull null
             BusArrival(
                 routeId = o.optString("routeid"),
@@ -273,7 +276,9 @@ object TagoApi {
     suspend fun busLocations(
         serviceKey: String,
         cityCode: String,
-        routeId: String
+        routeId: String,
+        /** true 면 잠깐 저장해 둔 결과를 쓰지 않고 서버에서 새로 받는다 (새로고침 버튼) */
+        fresh: Boolean = false
     ): List<BusLocation> = withContext(Dispatchers.IO) {
         val url = urlBuilder("$LOCATION_SERVICE/getRouteAcctoBusLcList", serviceKey)
             .addQueryParameter("cityCode", cityCode)
@@ -282,7 +287,7 @@ object TagoApi {
             .addQueryParameter("pageNo", "1")
             .build()
 
-        items(get(url)).map { o ->
+        realtimeItems(url, fresh).map { o ->
             BusLocation(
                 vehicleNo = o.optString("vehicleno"),
                 nodeId = o.optString("nodeid").takeIf { it.isNotBlank() },
@@ -452,6 +457,24 @@ object TagoApi {
         return list
     }
 
+    /** 실시간 정보(도착 예정 · 버스 위치)를 이만큼은 같이 쓴다 */
+    private const val REALTIME_TTL = 10_000L
+
+    /**
+     * 실시간 응답은 디스크에 두지 않고 메모리에만 [REALTIME_TTL] 동안 둔다.
+     * 위젯 · 앱 화면 · 승하차 알람이 같은 정류장을 거의 동시에 물을 때 서버를 한 번만 부른다.
+     */
+    private fun realtimeItems(url: HttpUrl, fresh: Boolean = false): List<JSONObject> {
+        val key = url.newBuilder().removeAllQueryParameters("serviceKey").build().toString()
+        val now = System.currentTimeMillis()
+        if (!fresh) synchronized(memoryCache) {
+            memoryCache[key]?.let { (savedAt, list) -> if (now - savedAt < REALTIME_TTL) return list }
+        }
+        val list = items(get(url))
+        synchronized(memoryCache) { memoryCache[key] = now to list }
+        return list
+    }
+
     private fun sha1(text: String): String =
         MessageDigest.getInstance("SHA-1").digest(text.toByteArray())
             .joinToString("") { "%02x".format(it) }
@@ -486,7 +509,7 @@ object TagoApi {
     private fun get(url: HttpUrl): String {
         val request = Request.Builder().url(url).header("Accept", "application/json").build()
         client.newCall(request).execute().use { res ->
-            val body = res.body?.string().orEmpty()
+            val body = res.body.string()
             if (!res.isSuccessful) {
                 throw ApiException("서버 오류 (HTTP ${res.code})")
             }

@@ -22,8 +22,14 @@ class RefreshWorker(
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
-        val ids = inputData.getIntArray(KEY_IDS)
-            ?: WidgetRenderer.allWidgetIds(applicationContext)
+        val requested = inputData.getIntArray(KEY_IDS)
+        // 15분 주기 갱신은 화면이 꺼져 있으면 건너뛴다 (아무도 안 보는 위젯을 위해 네트워크를 켜지 않는다).
+        // 화면을 켜면 5분 넘게 지난 위젯에는 '오래됨' 표시가 떠 있고, 누르면 바로 새로 불러온다.
+        if (requested == null && !inputData.getBoolean(KEY_STALE_ONLY, false)) {
+            val power = applicationContext.getSystemService(android.os.PowerManager::class.java)
+            if (power != null && !power.isInteractive) return Result.success()
+        }
+        val ids = requested ?: WidgetRenderer.allWidgetIds(applicationContext)
 
         // 네트워크를 타지 않고 '오래됨' 표시만 띄우는 일
         if (inputData.getBoolean(KEY_STALE_ONLY, false)) {

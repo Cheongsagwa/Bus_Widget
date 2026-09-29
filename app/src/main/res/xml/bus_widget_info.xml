@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- previewLayout · targetCell* · widgetFeatures 는 안드로이드 12(9) 이상에서만 쓰이고, 그 아래에서는 무시된다 -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,9 +13,9 @@
     android:resizeMode="horizontal|vertical"
     android:targetCellHeight="2"
     android:targetCellWidth="4"
-    android:updatePeriodMillis="1800000"
+    android:updatePeriodMillis="0"
     android:widgetCategory="home_screen"
     android:widgetFeatures="reconfigurable"
     app:widgetSize="small|wideSmall|medium|large"
     app:widgetStyle="colorful"
-    tools:targetApi="31" />
+    tools:ignore="UnusedAttribute" />

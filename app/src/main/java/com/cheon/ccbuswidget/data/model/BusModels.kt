@@ -48,23 +48,6 @@ object BusModels {
     val SMART_110_EV      = Model("스마트 110 EV", "SMART 110")
     val SKYWELL_HUSKY_EV  = Model("스카이웰 HU-SKY EV", "HU-SKY")
 
-    /** 전체 차종 목록 */
-    val allModels: List<Model> = listOf(
-        ELECCITY2_EV,
-        ELECCITY2_FCEV,
-        NEW_COUNTY_DIESEL,
-        COUNTY_NEW_BRZ,
-        CRRC_C1100_EV,
-        CRRC_C1100_TC_EV,
-        NSAC_LF_CNG,
-        E_FIBIRD_EV,
-        GREENCITY_CNG,
-        GREENCITY_DIESEL,
-        HIGER_HYPERSE_EV,
-        SMART_110_EV,
-        SKYWELL_HUSKY_EV,
-    )
-
     // ─────────────────────────── 차량 목록 ───────────────────────────
     // Vehicle(차량번호, 연식, 차종, 부가정보)
 
@@ -221,9 +204,6 @@ object BusModels {
 
     private val byNumber: Map<String, Vehicle> = vehicleList.associateBy { it.no }
 
-    /** 전체 차량 목록 (읽기 전용) */
-    val vehicles: List<Vehicle> get() = vehicleList
-
     /** "강원70자1077" 이든 "1077" 이든 숫자 뒤 4자리로 조회한다. */
     fun find(vehicleNo: String?): Vehicle? {
         if (vehicleNo.isNullOrBlank()) return null
@@ -234,8 +214,5 @@ object BusModels {
 
     /** 칩에 표시할 짧은 차종명. 등록되지 않은 차량이면 null. */
     fun shortName(vehicleNo: String?): String? = find(vehicleNo)?.model?.short
-
-    /** 전체 차종명. 등록되지 않은 차량이면 null. */
-    fun fullName(vehicleNo: String?): String? = find(vehicleNo)?.model?.name
 }
 

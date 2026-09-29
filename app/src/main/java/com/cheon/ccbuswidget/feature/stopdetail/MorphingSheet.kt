@@ -1,6 +1,7 @@
 package com.cheon.ccbuswidget.feature.stopdetail
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -28,7 +29,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -256,7 +259,26 @@ internal fun MorphingSheet(
             // 배경색이 완전히 불투명해지면(펼친 뒤) 가려진 지도 블러는 그리지 않는다 — 스크롤·전환이 가벼워진다
             drawBackdrop = tint.alpha < 0.98f) {
             CompositionLocalProvider(LocalContentColor provides colorResource(R.color.glass_on_surface)) {
-                Column(Modifier.fillMaxSize().padding(bottom = lerp(0.dp, nav, p))) {
+                // 다 펼친 창 위에 뜬 알람 배너 뒤로 창 내용이 실시간으로 흐리게 비치도록
+                // 창 전체를 배너 블러의 바탕으로 내놓는다 (펼친 창은 불투명해서 지도 스냅샷을 쓰면 멈춰 보인다)
+                val bannerSlot = LocalBannerSlot.current
+                val sheetBlur = rememberBlurBehind()
+                val sheetBlurAlpha = rememberUpdatedState(morphSettledAlpha(p))
+                SideEffect {
+                    if (bannerSlot != null) {
+                        if (p > 0.5f) {
+                            bannerSlot.blur = sheetBlur
+                            bannerSlot.blurAlpha = sheetBlurAlpha
+                        } else if (bannerSlot.blur === sheetBlur) {
+                            bannerSlot.blur = null
+                        }
+                    }
+                }
+                DisposableEffect(bannerSlot, sheetBlur) {
+                    onDispose { if (bannerSlot?.blur === sheetBlur) bannerSlot.blur = null }
+                }
+                Column(Modifier.fillMaxSize().blurBehindContent(sheetBlur, tint)
+                    .padding(bottom = lerp(0.dp, nav, p))) {
                     Box(Modifier.fillMaxWidth()
                         .height(lerp(collapsedHandleHeight, status + expandedHandleHeight, p))
                         .semantics { contentDescription = handleDescription }
@@ -299,7 +321,8 @@ internal fun BoxScope.MorphTopBar(
     val status = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     Row(
         Modifier.align(Alignment.TopStart).fillMaxWidth()
-            .padding(top = status).height(Tokens.Expanded.topBarHeight)
+            // 버튼 줄은 메인화면의 위쪽 버튼 · 알람 배너와 같은 높이 (상태바 아래 8)
+            .padding(top = status + Tokens.Glass.topBarTop).height(Tokens.Expanded.topBarHeight)
             .padding(horizontal = Tokens.Expanded.topBarMargin)
             .alpha((p - 0.5f) * 2f),
         verticalAlignment = Alignment.CenterVertically
@@ -316,7 +339,7 @@ internal fun BoxScope.MorphTopBar(
     }
 }
 
-/** 펼쳤을 때만 보이는 오른쪽 아래 새로고침 버튼 */
+/** 펼쳤을 때만 보이는 오른쪽 아래 새로고침 버튼. 불러오는 동안 아이콘이 돈다 */
 @Composable
 internal fun BoxScope.MorphRefreshButton(
     p: Float,
@@ -324,21 +347,80 @@ internal fun BoxScope.MorphRefreshButton(
     /** 주면 뒤의 본문을 흐리게 비추는 유리 버튼이 된다 ([시간표 보기] 바와 같은 반투명) */
     blur: BlurBehindState? = null,
     /** 바깥에서 따로 흐리게 할 때 (노선 창의 시간표 화면 등) */
-    extraAlpha: Float = 1f
+    extraAlpha: Float = 1f,
+    /** 불러오는 중인지 — 도는 동안 아이콘이 계속 돈다 */
+    loading: Boolean = false
+) {
+    val rotation = remember { Animatable(0f) }
+    val scope = rememberCoroutineScope()
+    // 불러오는 동안 계속 돌고, 끝나면 도던 바퀴를 마저 채우고 멈춘다
+    LaunchedEffect(loading) {
+        if (loading) {
+            while (true) {
+                rotation.animateTo(rotation.value + 360f, tween(Tokens.Motion.refreshSpin, easing = LinearEasing))
+            }
+        } else {
+            val rest = kotlin.math.ceil(rotation.value / 360f) * 360f
+            if (rest > rotation.value) rotation.animateTo(rest, tween(Tokens.Motion.medium, easing = Tokens.Motion.easing))
+            rotation.snapTo(0f)
+        }
+    }
+    MorphFloatingButton(
+        p = p,
+        iconRes = R.drawable.ic_refresh,
+        description = if (loading) "새로고침 중" else "새로고침",
+        blur = blur,
+        blurKey = "refresh",
+        extraAlpha = extraAlpha,
+        modifier = Modifier.graphicsLayer { rotationZ = rotation.value },
+        onClick = {
+            // 캐시에서 바로 끝나도 눌렀다는 게 보이도록 한 바퀴는 돈다
+            if (!loading) scope.launch {
+                rotation.animateTo(360f, tween(Tokens.Motion.refreshSpin, easing = Tokens.Motion.easing))
+                rotation.snapTo(0f)
+            }
+            onRefresh()
+        }
+    )
+}
+
+/**
+ * 펼쳤을 때만 보이는 아래쪽 떠 있는 버튼 (오른쪽 새로고침 · 왼쪽 알람, Figma 97:3742).
+ * [blur] 를 주면 뒤의 본문이 흐리게 비친다.
+ */
+@Composable
+internal fun BoxScope.MorphFloatingButton(
+    p: Float,
+    iconRes: Int,
+    description: String,
+    /** 버튼 안 아이콘에 붙는 수정자 (새로고침 중 회전 등) */
+    modifier: Modifier = Modifier,
+    alignStart: Boolean = false,
+    tint: Color = colorResource(R.color.glass_on_surface),
+    blur: BlurBehindState? = null,
+    blurKey: String = description,
+    extraAlpha: Float = 1f,
+    onClick: () -> Unit
 ) {
     if (p <= 0.5f) return
     // 뒤 블러는 펼치기가 끝난 뒤에 스며들게 한다 (펼치는 동안 매 프레임 본문 블러를 새로 만들지 않도록)
     val alpha = rememberUpdatedState(((p - 0.5f) * 2f).coerceIn(0f, 1f) * extraAlpha * morphSettledAlpha(p))
     RoundFloatingButton(
-        iconRes = R.drawable.ic_refresh,
-        description = "새로고침",
-        modifier = Modifier.align(Alignment.BottomEnd)
+        iconRes = iconRes,
+        description = description,
+        tint = tint,
+        modifier = Modifier.align(if (alignStart) Alignment.BottomStart else Alignment.BottomEnd)
             .navigationBarsPadding()
-            .padding(end = Tokens.Expanded.fabMargin, bottom = Tokens.Expanded.fabBottom)
+            .padding(
+                start = if (alignStart) Tokens.Expanded.fabMargin else 0.dp,
+                end = if (alignStart) 0.dp else Tokens.Expanded.fabMargin,
+                bottom = Tokens.Expanded.fabBottom
+            )
             .alpha((p - 0.5f) * 2f)
-            .then(if (blur != null) Modifier.blurBehindHole(blur, "refresh", alpha) else Modifier),
+            .then(if (blur != null) Modifier.blurBehindHole(blur, blurKey, alpha) else Modifier),
         background = if (blur != null) glassColor() else colorResource(R.color.expanded_button),
-        onClick = onRefresh
+        iconModifier = modifier,
+        onClick = onClick
     )
 }
 

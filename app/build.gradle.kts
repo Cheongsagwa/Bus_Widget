@@ -2,7 +2,7 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    // AGP 9 는 Kotlin 을 직접 컴파일한다 (built-in Kotlin) — org.jetbrains.kotlin.android 플러그인은 필요 없다
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
@@ -14,12 +14,12 @@ fun localProp(name: String): String = localProps.getProperty(name, "").trim()
 
 android {
     namespace = "com.cheon.ccbuswidget"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.cheon.ccbuswidget"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -47,10 +47,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
     buildFeatures {
         compose = true
         buildConfig = true
@@ -58,26 +54,25 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.core:core-ktx:1.19.1")
     // 앱을 켤 때 스플래시 화면 (안드로이드 12 미만에서도 같은 모양)
-    implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
-    implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.core:core-splashscreen:1.2.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.11.0")
+    implementation("androidx.activity:activity-compose:1.13.0")
 
-    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
+    implementation(platform("androidx.compose:compose-bom:2026.09.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    debugImplementation("androidx.compose.ui:ui-tooling")
 
-    implementation("androidx.work:work-runtime-ktx:2.9.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("androidx.work:work-runtime-ktx:2.12.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
+    implementation("com.squareup.okhttp3:okhttp:5.5.0")
 
     // 네이버 지도
     implementation("com.naver.maps:map-sdk:3.23.3")
     // 네이버 아이디로 로그인 (계정 연동 · 즐겨찾기 동기화)
+    // 5.12 부터 로그인 API 가 NidOAuth 로 바뀌어(기존 방식 제거 예정) 코드 이전 전까지는 5.10 에 고정한다
     implementation("com.navercorp.nid:oauth:5.10.0")
 }

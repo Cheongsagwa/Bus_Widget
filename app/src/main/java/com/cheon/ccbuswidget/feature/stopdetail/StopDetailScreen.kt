@@ -52,6 +52,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.repeatOnLifecycle
 import com.cheon.ccbuswidget.R
+import com.cheon.ccbuswidget.alarm.AlarmService
+import com.cheon.ccbuswidget.alarm.AlarmStore
+import com.cheon.ccbuswidget.alarm.BusAlarm
 import com.cheon.ccbuswidget.data.api.TagoApi
 import com.cheon.ccbuswidget.data.local.WidgetStore
 import com.cheon.ccbuswidget.data.model.BusArrival
@@ -173,6 +176,8 @@ internal fun MapScreen(
     var loading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     var updatedAt by remember { mutableStateOf("") }
+    /** 정류장 좌표·번호를 이미 찾아본 정류장 (30초마다 또 찾지 않도록) */
+    var coordsLookedUp by remember { mutableStateOf("") }
 
     // 노선 시트
     var routeStops by remember { mutableStateOf<List<RouteStop>>(emptyList()) }
@@ -251,7 +256,8 @@ internal fun MapScreen(
         }
     }
 
-    suspend fun loadStop() {
+    /** [fresh] = 새로고침 버튼 — 저장해 둔 결과 없이 서버에서 새로 받는다 */
+    suspend fun loadStop(fresh: Boolean = false) {
         if (stop.nodeId.isBlank()) {
             rows = emptyList()
             loading = false
@@ -266,7 +272,7 @@ internal fun MapScreen(
         try {
             // 도착 정보(실시간)와 경유 노선(캐시됨)을 동시에 부른다
             val (arrivals, passing) = kotlinx.coroutines.coroutineScope {
-                val arrivalsJob = async { TagoApi.arrivals(apiKey, cityCode, stop.nodeId) }
+                val arrivalsJob = async { TagoApi.arrivals(apiKey, cityCode, stop.nodeId, fresh) }
                 val passingJob = async {
                     runCatching { TagoApi.routesOfStop(apiKey, cityCode, stop.nodeId) }
                         .getOrDefault(emptyList())
@@ -295,7 +301,9 @@ internal fun MapScreen(
             updatedAt = timeFormat.format(Date())
             error = null
 
-            if (stop.gpsLat == null || stop.gpsLng == null || stop.nodeNo == null) {
+            if ((stop.gpsLat == null || stop.gpsLng == null || stop.nodeNo == null) &&
+                coordsLookedUp != stop.nodeId) {
+                coordsLookedUp = stop.nodeId
                 runCatching { TagoApi.searchStops(apiKey, cityCode, stop.nodeName) }
                     .getOrNull()
                     ?.firstOrNull { it.nodeId == stop.nodeId }
@@ -323,7 +331,7 @@ internal fun MapScreen(
         loading = false
     }
 
-    suspend fun loadRoute(routeId: String, withStops: Boolean) {
+    suspend fun loadRoute(routeId: String, withStops: Boolean, fresh: Boolean = false) {
         if (apiKey.isBlank()) return
         routeLoading = true
         try {
@@ -334,7 +342,7 @@ internal fun MapScreen(
                     runCatching { TagoApi.routeDetail(apiKey, cityCode, routeId) }.getOrNull()
                 } else null
                 val busesJob = async {
-                    runCatching { TagoApi.busLocations(apiKey, cityCode, routeId) }.getOrDefault(emptyList())
+                    runCatching { TagoApi.busLocations(apiKey, cityCode, routeId, fresh) }.getOrDefault(emptyList())
                 }
                 stopsJob?.let { routeStops = it.await() }
                 detailJob?.let { routeDetail = it.await() }
@@ -354,13 +362,25 @@ internal fun MapScreen(
         stopFrom = if (origin == Screen.Favorites ||
             ((origin == Screen.Route || origin == Screen.RouteExpanded) && routeFrom == Screen.Favorites))
             Screen.Favorites else Screen.Main
-        stop = picked
+        // 같은 정류장을 다시 열면(알람 배너 등) 보던 도착정보를 그대로 둔다.
+        // 예전에는 여기서 목록을 비웠는데, 이미 그 정류장을 보고 있던 중이면 새로 불러오지 않아
+        // 다음 갱신(30초)까지 '지금은 도착 예정 정보가 없습니다'가 떠 있었다.
+        val alreadyWatching = picked.nodeId == stop.nodeId &&
+            (screen == Screen.Stop || screen == Screen.StopExpanded)
+        val sameStop = picked.nodeId == stop.nodeId && rows.isNotEmpty()
+        stop = if (sameStop) stop.copy(nodeName = picked.nodeName.ifBlank { stop.nodeName }) else picked
         route = null
         routeStops = emptyList()
         buses = emptyList()
         routeDetail = null
-        rows = emptyList()
-        updatedAt = ""
+        if (!sameStop) {
+            rows = emptyList()
+            updatedAt = ""
+            // 불러오기 시작 전 한순간 '정보 없음'이 보이지 않도록 바로 불러오는 중으로 둔다
+            loading = true
+            // 이미 이 정류장을 보고 있던 중이면 30초 갱신이 다시 시작되지 않으니 지금 바로 불러온다
+            if (alreadyWatching) scope.launch { loadStop() }
+        }
         screen = Screen.Stop
     }
 
@@ -493,7 +513,16 @@ internal fun MapScreen(
     val navBarInset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val toolbarBottom = maxOf(Tokens.Toolbar.bottomMargin, navBarInset)
 
-    CompositionLocalProvider(LocalMapBackdrop provides backdrop) {
+    // ---- 승하차 알람 ----
+    val alarmController = rememberAlarmController()
+    val bannerSlot = remember { BannerSlot() }
+    val activeAlarm by AlarmStore.active.collectAsState()
+    val alarmRemaining by AlarmStore.remaining.collectAsState()
+    // 앱을 다시 열면 켜져 있던 알람을 이어서 지켜본다 (앱이 꺼져 있던 동안 서비스가 내려갔을 수 있다)
+    LaunchedEffect(Unit) { AlarmService.resume(context) }
+
+    CompositionLocalProvider(LocalMapBackdrop provides backdrop, LocalAlarmController provides alarmController,
+        LocalBannerSlot provides bannerSlot) {
         Box(modifier = Modifier.fillMaxSize().background(colorResource(R.color.expanded_surface))) {
             // ---------------------------------------------------------- 지도
             if (naverKey.isBlank()) {
@@ -571,6 +600,7 @@ internal fun MapScreen(
                         expanded = stopExpanded,
                         onExpandedChange = { screen = if (it) Screen.StopExpanded else Screen.Stop },
                         onDismiss = closeSheet,
+                        stopNodeId = stop.nodeId,
                         stopName = stop.nodeName,
                         stopNo = stop.nodeNo,
                         updatedAt = updatedAt,
@@ -578,7 +608,7 @@ internal fun MapScreen(
                         error = error,
                         rows = rows,
                         isFavorite = favorite,
-                        onRefresh = { scope.launch { loadStop() } },
+                        onRefresh = { scope.launch { loadStop(fresh = true) } },
                         onToggleFavorite = { favorite = WidgetStore.toggleFavorite(context, stop) },
                         onRouteClick = { row -> openRoute(row.routeId, row.routeNo, row.routeType) },
                         onMinimizedChange = { sheetMinimized = it }
@@ -605,7 +635,7 @@ internal fun MapScreen(
                         error = routeError,
                         updatedAt = updatedAt,
                         isFavorite = favoriteRoute,
-                        onRefresh = { scope.launch { loadRoute(r.routeId, true) } },
+                        onRefresh = { scope.launch { loadRoute(r.routeId, true, fresh = true) } },
                         onToggleFavorite = {
                             favoriteRoute = WidgetStore.toggleFavoriteRoute(
                                 context, r.routeId, r.routeNo, r.routeType
@@ -788,6 +818,52 @@ internal fun MapScreen(
                 onPickStop = { picked -> openStop(picked) },
                 onPickRoute = { id, no, type -> openRoute(id, no, type) }
             )
+        }
+
+        // ------------------------------------------------ 승하차 알람 배너
+        // 켜져 있으면 어느 화면에서나 맨 위 가운데 (Figma Toast: 뒤로 ↔ 검색 버튼 사이)
+        val shownAlarm = rememberLatest(activeAlarm != null, activeAlarm)
+        // 배너는 모든 화면에서 같은 자리 — 상태바 아래 8 (메인화면 기준).
+        // 위쪽 떠 있는 버튼들(지도 위 · 펼친 창)도 모두 이 줄에 맞춰 둔다.
+        val expandedTop = underScreen == Screen.StopExpanded || underScreen == Screen.RouteExpanded ||
+            (underScreen == Screen.Favorites && favoritesExpanded)
+        val bannerOnSheet = expandedTop && screen != Screen.Search
+        Box(Modifier.fillMaxSize()) {
+        AnimatedVisibility(
+            visible = activeAlarm != null,
+            modifier = Modifier.align(Alignment.TopCenter)
+                .statusBarsPadding()
+                .padding(top = Tokens.Glass.topBarTop),
+            enter = scaleIn(tween(Tokens.Motion.medium, easing = Tokens.Motion.easing),
+                initialScale = Tokens.Toolbar.hiddenScale) +
+                fadeIn(tween(Tokens.Motion.medium, easing = Tokens.Motion.easing)),
+            exit = scaleOut(tween(Tokens.Motion.medium, easing = Tokens.Motion.easing),
+                targetScale = Tokens.Toolbar.hiddenScale) +
+                fadeOut(tween(Tokens.Motion.fast))
+        ) {
+            shownAlarm?.let { a ->
+                AlarmBanner(
+                    a, alarmRemaining, onCancel = { alarmController.cancel() },
+                    sheetBlur = bannerSlot.blur.takeIf { bannerOnSheet },
+                    sheetBlurAlpha = bannerSlot.blurAlpha,
+                    onClick = {
+                        when (a.type) {
+                            // 승차: 타려는 정류장의 도착정보 창
+                            BusAlarm.Type.BOARD -> openStop(BusStop(a.stopNodeId, a.stopName))
+                            // 하차: 타고 있는 노선 창 — 지금 지나고 있는 정류장을 기준(강조 · 맨 위)으로
+                            BusAlarm.Type.ALIGHT -> {
+                                val last = a.stops.lastIndex
+                                val here = a.stops.getOrNull(
+                                    (last - (alarmRemaining ?: last)).coerceIn(0, maxOf(last, 0))
+                                )
+                                if (here != null) stop = BusStop(here.nodeId, here.name, gpsLat = here.lat, gpsLng = here.lng)
+                                openRoute(a.routeId, a.routeNo, a.routeType)
+                            }
+                        }
+                    }
+                )
+            }
+        }
         }
     }
 }

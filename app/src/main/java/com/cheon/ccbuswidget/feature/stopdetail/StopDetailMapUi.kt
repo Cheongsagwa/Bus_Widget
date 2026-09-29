@@ -333,6 +333,8 @@ internal fun RoundFloatingButton(
     modifier: Modifier = Modifier,
     tint: Color = colorResource(R.color.glass_on_surface),
     background: Color = colorResource(R.color.expanded_button),
+    /** 아이콘에만 붙는 수정자 (새로고침 중 회전 등) */
+    iconModifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Box(
@@ -348,7 +350,7 @@ internal fun RoundFloatingButton(
             painter = painterResource(iconRes),
             contentDescription = description,
             tint = tint,
-            modifier = Modifier.size(Tokens.Glass.buttonIconSize)
+            modifier = iconModifier.size(Tokens.Glass.buttonIconSize)
         )
     }
 }
@@ -498,7 +500,7 @@ internal fun NaverMapPane(
     onMyLocationSettled: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val density = context.resources.displayMetrics.density
+    val density = androidx.compose.ui.platform.LocalResources.current.displayMetrics.density
     val lifecycleOwner = LocalLifecycleOwner.current
     var authError by remember { mutableStateOf<String?>(null) }
     var startupError by remember { mutableStateOf<String?>(null) }

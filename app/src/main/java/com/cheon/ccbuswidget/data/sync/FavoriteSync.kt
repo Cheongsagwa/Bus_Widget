@@ -178,7 +178,7 @@ object FavoriteSync {
                 .header("Authorization", "Bearer $token")
                 .build()
             http.newCall(request).execute().use { res ->
-                val text = res.body?.string().orEmpty()
+                val text = res.body.string()
                 if (res.code == 401 && attempt == 0) return@use // 토큰 갱신 후 재시도
                 if (!res.isSuccessful) error("동기화 서버 오류 (${res.code})")
                 return text

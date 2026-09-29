@@ -20,7 +20,6 @@ object Tokens {
      * Figma: fill #80F1F1F3, DROP_SHADOW blur 65 / #40000000, BACKGROUND_BLUR 24
      */
     object Glass {
-        val cornerRadius = 32.dp
         /** Figma 그림자 blur 65 를 안드로이드 elevation 으로 옮긴 값 */
         val shadowElevation = 16.dp
         /** Figma BACKGROUND_BLUR 반경 — 더보기 메뉴(별도 창)에서 실제로 적용된다 */
@@ -43,7 +42,6 @@ object Tokens {
         /** 카드 좌우 여백 */
         val sideMargin = 17.dp
         val cornerRadius = 32.dp
-        val elevation = 16.dp
 
         /** 정류장 시트 안쪽 여백 (2열 그리드 기준선) */
         val stopContentPadding = 28.dp
@@ -73,8 +71,6 @@ object Tokens {
         /** 헤더 ↔ 구분선 (노선 시트, Figma 106 → 113) */
         val dividerTop = 7.dp
 
-        /** 정류장 시트: 손잡이 ↔ 정류장 이름 */
-        val stopHeaderTop = 11.dp
         /** 정류장 시트: 헤더 ↔ 구분선 */
         val stopDividerTop = 8.dp
         /** 정류장 시트: 구분선 ↔ 2열 그리드 */
@@ -95,8 +91,6 @@ object Tokens {
          * 정류장·노선 시트는 이 아래에 헤더가 이어지므로 원래 위치(손잡이 12+5 + 헤더 여백)를 맞춰 준다.
          */
         val morphHandleHeight = 29.dp
-        /** 모핑 시트가 전체 화면일 때 블러 반경 */
-        val morphBlurRadius = 72.dp
     }
 
     /**
@@ -137,8 +131,6 @@ object Tokens {
     object ActionBar {
         val width = 192.dp
         val height = 57.dp
-        val paddingHorizontal = 24.dp
-        val paddingVertical = 14.dp
         val corner = 50.dp
         val shadowElevation = 10.dp
         val text = 18.sp
@@ -306,8 +298,6 @@ object Tokens {
         /** 뱃지 ↔ 오른쪽 텍스트 */
         val gap = 14.dp
         val text = 13.sp
-        /** 4자리 이상 노선 번호일 때 */
-        val textSmall = 11.sp
         /** "서면5(서면100)" 의 괄호 줄 (Figma 6sp) */
         val textSub = 6.sp
     }
@@ -315,8 +305,6 @@ object Tokens {
     /** 노선 유형 칩 (지선 / 간선 / 마을) — Figma 공통 */
     object TypeChip {
         val corner = 6.dp
-        val paddingHorizontal = 8.dp
-        val paddingVertical = 3.dp
         /** 헤더 칩 크기 (Figma 39x20) */
         val width = 39.dp
         val height = 20.dp
@@ -460,6 +448,8 @@ object Tokens {
         const val appear = 280
         /** 검색창이 지도 위로 페이드 인/아웃 되는 시간 */
         const val searchFade = 300
+        /** 새로고침 아이콘이 한 바퀴 도는 시간 */
+        const val refreshSpin = 700
     }
 
     /** 진행 표시기 등 자잘한 것 */
@@ -467,5 +457,28 @@ object Tokens {
         val spinnerSize = 22.dp
         val smallSpinnerSize = 20.dp
         val spinnerStroke = 2.dp
+    }
+
+    /** 승하차 알람 (Figma Toast 96:2208 · 알람 아이콘) */
+    object Alarm {
+        /** 위쪽 배너 (Figma 283x50, 모서리 54, 좌우 10 · 위아래 8) */
+        val bannerWidth = 283.dp
+        val bannerHeight = 50.dp
+        val bannerCorner = 54.dp
+        val bannerPaddingHorizontal = 10.dp
+        val bannerPaddingVertical = 8.dp
+        val bannerIconSize = 24.dp
+        val bannerBusIconSize = 14.dp
+        val bannerGap = 8.dp
+        val bannerText = 14.sp
+        val bannerLine = 17.sp
+        /** 「해제」 버튼 (모서리 20, 좌우 20 · 위아래 4) */
+        val cancelCorner = 20.dp
+        val cancelPaddingHorizontal = 20.dp
+        val cancelPaddingVertical = 4.dp
+        /** 알람 아이콘 */
+        val iconSize = 24.dp
+        /** 하차 알람 설정: 정류장 하나에 걸리는 시간(분) 어림값 */
+        const val MINUTES_PER_STOP = 1.5f
     }
 }

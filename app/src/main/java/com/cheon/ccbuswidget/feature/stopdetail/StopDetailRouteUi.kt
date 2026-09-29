@@ -41,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,6 +69,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import com.cheon.ccbuswidget.R
+import com.cheon.ccbuswidget.alarm.AlarmStore
+import com.cheon.ccbuswidget.alarm.BusAlarm
 import com.cheon.ccbuswidget.data.local.Timetable
 import com.cheon.ccbuswidget.data.local.TimetableStore
 import com.cheon.ccbuswidget.data.model.BusLocation
@@ -124,13 +127,41 @@ internal fun RouteMorphSheet(
     LaunchedEffect(expanded) { if (!expanded) showTimetable = false }
     // 시간표를 보는 중에는 뒤로가기 = 타임라인으로
     BackHandler(enabled = expanded && showTimetable) { showTimetable = false }
+
+    // ---- 하차 알람 (Figma 40:186 하차알람 설정) ----
+    val alarms = LocalAlarmController.current
+    val activeAlarm by AlarmStore.active.collectAsState()
+    val alightOn = activeAlarm?.isAlightingOn(routeId) == true
+    var showAlightPicker by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(expanded) { if (!expanded) showAlightPicker = false }
+    BackHandler(enabled = expanded && showAlightPicker) { showAlightPicker = false }
+    /** 알람 버튼: 하차 알람이 켜져 있으면 끄고, 아니면 하차알람 설정 화면을 연다 */
+    val onAlarmClick: () -> Unit = {
+        if (alightOn) {
+            alarms?.cancel()
+        } else {
+            showTimetable = false
+            showAlightPicker = true
+            if (!expanded) onExpandedChange(true)
+        }
+    }
+    /** 하차 설정의 기준(탄) 정류장 — 지금 보고 있던 정류장, 없으면 기점 */
+    val baseIndex = remember(stops, currentNodeId) {
+        stops.indexOfFirst { it.nodeId == currentNodeId }.coerceAtLeast(0)
+    }
+    val pickerState = rememberLazyListState()
     // 시간표를 봤다가 돌아와도 타임라인 스크롤 위치가 그대로 남도록 밖에서 들고 있는다
     val timelineState = rememberLazyListState()
+    // 노선 창을 열면 지금 정류장(강조된 줄)이 맨 위에 오도록 스크롤해 둔다 — 그 정류장부터 앞뒤로 스크롤
+    LaunchedEffect(stops, currentNodeId) {
+        val i = stops.indexOfFirst { it.nodeId == currentNodeId }
+        if (i > 0) timelineState.scrollToItem(i)
+    }
 
     // ---- [시간표 보기] 바 · 새로고침 버튼 뒤 블러 (검색창의 검색바와 같은 방식, GlassBlurBehind.kt) ----
     // 본문(타임라인 + 아래 '더 있음' 그라데이션)을 그대로 그리고, 버튼 자리에만 흐린 복사본을 깐다.
     val blur = rememberBlurBehind()
-    val barShown = expanded && !showTimetable
+    val barShown = expanded && !showTimetable && !showAlightPicker
     // 흐린 복사본도 바와 같이 나타나고 사라진다
     val barBlurAlpha = animateFloatAsState(
         if (barShown) 1f else 0f,
@@ -142,7 +173,7 @@ internal fun RouteMorphSheet(
     val barBottom = (nav + Tokens.Expanded.fabBottom +
         (Tokens.Glass.buttonSize - Tokens.ActionBar.height) / 2).coerceAtLeast(0.dp)
     val refreshAlpha by animateFloatAsState(
-        if (showTimetable) 0f else 1f,
+        if (showTimetable || showAlightPicker) 0f else 1f,
         tween(Tokens.Motion.medium, easing = Tokens.Motion.easing), label = "새로고침 버튼"
     )
 
@@ -152,21 +183,40 @@ internal fun RouteMorphSheet(
         collapsedTint = glassColor(),
         expandedTint = expandedSurface(),
         handleDescription = "노선 창 손잡이",
-        expandedHandleHeight = Tokens.Expanded.topBarHeight,
+        // 위쪽 버튼 줄이 상태바 아래 8 에 놓이므로 그만큼 손잡이 영역도 늘린다
+        expandedHandleHeight = Tokens.Expanded.topBarHeight + Tokens.Glass.topBarTop,
         // 아래로 쓸어내리면 먼저 헤더만 남은 축소창이 되고, 한 번 더 내리면 닫힌다 (Figma 90:2852)
         minimizedHeight = Tokens.Sheet.minimizedHeight,
         onMinimizedChange = onMinimizedChange,
         onDismiss = onDismiss,
         handle = { p ->
             MorphTopBar(p, isFavorite,
-                onBack = { if (showTimetable) showTimetable = false else onExpandedChange(false) },
+                onBack = {
+                    when {
+                        showTimetable -> showTimetable = false
+                        showAlightPicker -> showAlightPicker = false
+                        else -> onExpandedChange(false)
+                    }
+                },
                 onToggleFavorite = onToggleFavorite)
         },
         overlay = { p ->
             // 시간표 화면(Figma 81:937)에는 새로고침 버튼이 없다
             if (refreshAlpha > 0f) {
                 Box(Modifier.matchParentSize().graphicsLayer { alpha = refreshAlpha }) {
-                    MorphRefreshButton(p, onRefresh, blur = blur, extraAlpha = refreshAlpha)
+                    MorphRefreshButton(p, onRefresh, blur = blur, extraAlpha = refreshAlpha, loading = loading)
+                    // 왼쪽 아래 알람 버튼 (Figma 97:3742) — 새로고침과 마주 본다
+                    MorphFloatingButton(
+                        p = p,
+                        iconRes = if (alightOn) R.drawable.ic_alarm_on else R.drawable.ic_alarm,
+                        description = if (alightOn) "하차 알람 끄기" else "하차 알람",
+                        alignStart = true,
+                        tint = if (alightOn) Color.Unspecified else colorResource(R.color.glass_on_surface),
+                        blur = blur,
+                        blurKey = "alarm",
+                        extraAlpha = refreshAlpha,
+                        onClick = onAlarmClick
+                    )
                 }
             }
             val barSpec = tween<Float>(Tokens.Motion.medium, easing = Tokens.Motion.easing)
@@ -209,6 +259,8 @@ internal fun RouteMorphSheet(
             showActions = actionsAlpha > 0f,
             actionsAlpha = actionsAlpha,
             isFavorite = isFavorite,
+            alarmOn = alightOn,
+            onAlarm = onAlarmClick,
             onRefresh = onRefresh,
             onToggleFavorite = onToggleFavorite
         )
@@ -226,7 +278,11 @@ internal fun RouteMorphSheet(
         val underNav = lerp(0.dp, nav, p)
         val timelineBottom = lerp(0.dp, barBottom + Tokens.ActionBar.height + Tokens.Timetable.barClearance, p)
         AnimatedContent(
-            targetState = showTimetable,
+            targetState = when {
+                showTimetable -> BodyMode.Timetable
+                showAlightPicker -> BodyMode.AlightPicker
+                else -> BodyMode.Timeline
+            },
             modifier = Modifier.weight(1f).fillMaxWidth().extendBottom(underNav)
                 .alpha(listAlpha)
                 .blurBehindContent(blur, tint),
@@ -235,8 +291,32 @@ internal fun RouteMorphSheet(
                     fadeOut(tween(Tokens.Motion.fast, easing = Tokens.Motion.easing))
             },
             label = "타임라인 ↔ 시간표"
-        ) { timetableShown ->
-            if (timetableShown) {
+        ) { mode ->
+            if (mode == BodyMode.AlightPicker) {
+                AlightPicker(
+                    routeId = routeId,
+                    routeNo = routeNo,
+                    routeType = routeType,
+                    stops = stops,
+                    buses = buses,
+                    baseIndex = baseIndex,
+                    activeAlarm = activeAlarm,
+                    fadeSurface = tint,
+                    listState = pickerState,
+                    bottomPadding = lerp(0.dp, nav, p),
+                    onPick = { index ->
+                        val on = activeAlarm?.let {
+                            it.isAlightingOn(routeId) && it.stopNodeId == stops[index].nodeId
+                        } == true
+                        if (on) alarms?.cancel()
+                        else {
+                            alarms?.startAlighting(routeId, routeNo, routeType, stops, baseIndex, index)
+                            showAlightPicker = false
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else if (mode == BodyMode.Timetable) {
                 RouteTimetable(
                     routeNo = routeNo,
                     timetable = timetable,
@@ -282,6 +362,9 @@ internal fun RouteHeader(
     /** 모핑 중 헤더 버튼이 흐려지는 정도 */
     actionsAlpha: Float = 1f,
     isFavorite: Boolean = false,
+    /** 하차 알람 아이콘 (Figma 8:30 — 새로고침 · 알람 · 즐겨찾기 순) */
+    alarmOn: Boolean = false,
+    onAlarm: (() -> Unit)? = null,
     onRefresh: () -> Unit = {},
     onToggleFavorite: () -> Unit = {}
 ) {
@@ -415,6 +498,10 @@ internal fun RouteHeader(
                         .clickable { onRefresh() }
                 )
             }
+            if (onAlarm != null) {
+                Spacer(modifier = Modifier.width(Tokens.Sheet.headerIconGap))
+                AlarmIcon(on = alarmOn, size = Tokens.Header.iconSize, onClick = onAlarm)
+            }
             Spacer(modifier = Modifier.width(Tokens.Sheet.headerIconGap))
             FavoriteIcon(isFavorite, Tokens.Header.iconSize, onToggleFavorite)
         }
@@ -528,6 +615,10 @@ internal fun TimelineStopItem(
     busesHere: List<BusLocation>,
     isCurrent: Boolean,
     lineColor: Color,
+    /** 정류장 번호 대신 쓸 둘째 줄 (하차알람 설정: "1038 · 8분소요") */
+    info: String? = null,
+    /** 줄 오른쪽 끝에 붙일 것 (하차알람 설정의 알람 아이콘) */
+    trailing: (@Composable () -> Unit)? = null,
     onClick: () -> Unit
 ) {
     val bus = busesHere.firstOrNull()
@@ -650,12 +741,18 @@ internal fun TimelineStopItem(
             )
             Text(
                 // 정류장 번호만 표시 (번호가 없으면 노선 내 순번)
-                stop.nodeNo ?: "${stop.order}번째",
+                info ?: stop.nodeNo ?: "${stop.order}번째",
                 fontSize = Tokens.Timeline.infoText,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+        }
+        if (trailing != null) {
+            Box(
+                Modifier.fillMaxHeight().padding(end = Tokens.Sheet.horizontalPadding),
+                contentAlignment = Alignment.Center
+            ) { trailing() }
         }
     }
 }
@@ -757,4 +854,65 @@ private fun Modifier.extendBottom(extra: Dp): Modifier = layout { measurable, co
         ) else constraints
     )
     layout(placeable.width, (placeable.height - extraPx).coerceAtLeast(0)) { placeable.place(0, 0) }
+}
+
+/** 노선 확장창 아래쪽에 무엇을 보여 줄지 */
+private enum class BodyMode { Timeline, Timetable, AlightPicker }
+
+/**
+ * 하차알람 설정 (Figma 40:186).
+ * 지금 정류장(맨 위, 강조)부터 종점까지 — 정류장마다 "번호 · N분소요" 와 알람 아이콘.
+ * 알람 아이콘을 누르면 지금 정류장 → 그 정류장 하차 알람이 켜진다.
+ */
+@Composable
+private fun AlightPicker(
+    routeId: String,
+    routeNo: String,
+    routeType: String?,
+    stops: List<RouteStop>,
+    buses: List<BusLocation>,
+    baseIndex: Int,
+    activeAlarm: BusAlarm?,
+    fadeSurface: Color,
+    listState: LazyListState,
+    bottomPadding: Dp,
+    onPick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val busByNode = remember(buses) { buses.groupBy { it.nodeId ?: it.nodeName.orEmpty() } }
+    val kindColor = colorResource(RouteKind.of(routeNo, routeType).colorRes)
+    val shown = remember(stops, baseIndex) { stops.withIndex().drop(baseIndex) }
+    val alarmTarget = activeAlarm?.takeIf { it.isAlightingOn(routeId) }?.stopNodeId
+    Box(modifier = modifier.fillMaxWidth()) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = bottomPadding)
+        ) {
+            items(shown, key = { "${it.value.order}_${it.value.nodeId}" }) { (index, rs) ->
+                val isBase = index == baseIndex
+                val minutes = kotlin.math.round((index - baseIndex) * Tokens.Alarm.MINUTES_PER_STOP).toInt()
+                val number = rs.nodeNo ?: "${rs.order}번째"
+                TimelineStopItem(
+                    stop = rs,
+                    busesHere = busByNode[rs.nodeId].orEmpty(),
+                    isCurrent = isBase,
+                    lineColor = kindColor,
+                    info = if (isBase) "$number · 현재 정류장" else "$number · ${minutes}분소요",
+                    trailing = if (isBase) null else {
+                        {
+                            AlarmIcon(
+                                on = alarmTarget == rs.nodeId,
+                                offAlpha = 0.5f,
+                                onClick = { onPick(index) }
+                            )
+                        }
+                    },
+                    onClick = { if (!isBase) onPick(index) }
+                )
+            }
+        }
+        TopFade(visible = listState.canScrollBackward, surface = fadeSurface)
+        BottomFade(visible = listState.canScrollForward, surface = fadeSurface)
+    }
 }

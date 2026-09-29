@@ -132,7 +132,7 @@ object NaverAccount {
             .build()
         val json = runCatching {
             http.newCall(Request.Builder().url(TOKEN_URL).post(body).build()).execute().use { res ->
-                JSONObject(res.body?.string().orEmpty())
+                JSONObject(res.body.string())
             }
         }.getOrElse { return@withContext null } // 네트워크 문제: 다음에 다시 시도
 

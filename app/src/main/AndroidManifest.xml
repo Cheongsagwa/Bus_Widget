@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- 현위치 갱신 버튼 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 승하차 알람: 진행 상황 알림 · 알림 울리기 · 앱을 닫아도 계속 지켜보기 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 포그라운드 서비스 유형(location · dataSync)은 아래 AlarmService 에 선언. 스토어 등록 시 사용 목적을 따로 적는다 -->
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE"
+        tools:ignore="ForegroundServicesPolicy" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- 안드로이드 16 Live Update (상태바 칩 · 삼성 Now Bar) -->
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -23,7 +35,6 @@
             android:configChanges="uiMode"
             android:theme="@style/Theme.CcBusWidget.Starting"
             android:exported="true"
-            android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -51,6 +62,12 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
+
+        <!-- 승하차 알람 (승차: 도착 정보 확인 / 하차: GPS 로 정류장 따라가기) -->
+        <service
+            android:name=".alarm.AlarmService"
+            android:exported="false"
+            android:foregroundServiceType="location|dataSync" />
 
         <receiver
             android:name=".widget.BusWidgetProvider"
