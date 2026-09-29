@@ -70,6 +70,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("com.squareup.okhttp3:okhttp:5.5.0")
 
+    // 갤럭시 워치(Wear OS 앱)로 승하차 알람 상태 보내기
+    implementation("com.google.android.gms:play-services-wearable:19.0.0")
+
     // 네이버 지도
     implementation("com.naver.maps:map-sdk:3.23.3")
     // 네이버 아이디로 로그인 (계정 연동 · 즐겨찾기 동기화)

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 워치 앱 아이콘: 청록 원 + 흰 버스 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="48" android:viewportHeight="48">
+<path android:fillColor="#FF00B9BE" android:pathData="M48,24a24,24 0 1,1 -48,0a24,24 0 1,1 48,0z" />
+<group android:scaleX="0.5597" android:scaleY="0.5597" android:translateX="-6.224" android:translateY="-6.084">
+<path android:pathData="M40,29.5 h28 a6,6 0 0 1 6,6 v32.0 a6,6 0 0 1 -6,6 h-28 a6,6 0 0 1 -6,-6 v-32.0 a6,6 0 0 1 6,-6z M34,36.5 h40 M34,55.5 h40" android:strokeWidth="3.2" android:strokeLineJoin="round" android:strokeColor="#FFFFFFFF" />
+<path android:pathData="M32.4,35.5 h-3 a2.5,2.5 0 0 0 -2.5,2.5 v6.5 M75.6,35.5 h3 a2.5,2.5 0 0 1 2.5,2.5 v6.5" android:strokeWidth="2.8160000000000003" android:strokeLineCap="round" android:strokeLineJoin="round" android:strokeColor="#FFFFFFFF" />
+<path android:pathData="M38.5,64.5 a3.0,3.0 0 1 0 6.0,0 a3.0,3.0 0 1 0 -6.0,0zM63.5,64.5 a3.0,3.0 0 1 0 6.0,0 a3.0,3.0 0 1 0 -6.0,0z M38,74.6 v3.5 a1.5,1.5 0 0 0 1.5,1.5 h5 a1.5,1.5 0 0 0 1.5,-1.5 v-3.5z M62,74.6 v3.5 a1.5,1.5 0 0 0 1.5,1.5 h5 a1.5,1.5 0 0 0 1.5,-1.5 v-3.5z" android:fillColor="#FFFFFFFF" />
+</group>
+</vector>

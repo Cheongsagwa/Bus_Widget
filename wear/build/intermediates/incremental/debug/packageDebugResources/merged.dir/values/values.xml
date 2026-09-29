@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="android_wear_capabilities">
+        <item>bus_alarm_wear</item>
+    </string-array>
+    <string name="app_name">봄봄버스</string>
+    <string name="complication_label">남은 정류장</string>
+    <string name="tile_label">승하차 알람</string>
+</resources>

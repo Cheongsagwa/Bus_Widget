@@ -165,8 +165,8 @@ object Tokens {
         val routeHeaderTop = 7.dp
         /** 노선 확장창: 운행 대수 ↔ 구분선 (Figma 167 → 173) */
         val routeDividerTop = 6.dp
-        /** 2열 그리드 왼쪽 여백 (Figma 50) */
-        val gridPadding = 50.dp
+        /** 2열 그리드 왼쪽 여백 — 위 정류장 이름 · 칩과 왼쪽 끝을 맞춘다 (horizontalPadding 과 같게) */
+        val gridPadding = 41.dp
         /** 2열 그리드 오른쪽 여백 (Figma 40 — 143 칸 두 개 + 36 사이) */
         val gridPaddingEnd = 40.dp
         /** 오른쪽 아래 새로고침 버튼 여백 */
@@ -286,8 +286,8 @@ object Tokens {
         val timeText = 20.sp
         /** 운행 정보가 없을 때 대체 문구 */
         val idleText = 20.sp
-        /** N전 · 다음 N분 — Figma 10 */
-        val subText = 10.sp
+        /** N전 · 다음 N분 (Figma 10 → 1 키움) */
+        val subText = 11.sp
         /** 두 줄의 글자 메트릭 사이에 별도 여백을 더하지 않는다. */
         val subGap = 0.dp
     }
@@ -343,8 +343,8 @@ object Tokens {
 
         /** 기둥 ↔ 정류장 이름 사이 간격 (Figma 82 → 103) */
         val textGap = 21.dp
-        val nameText = 17.sp
-        val infoText = 14.sp
+        val nameText = 18.sp
+        val infoText = 15.sp
 
         /**
          * 현재 정류장 오버레이가 시작되는 x (Figma: 노선 흐름 오른쪽부터 끝까지).

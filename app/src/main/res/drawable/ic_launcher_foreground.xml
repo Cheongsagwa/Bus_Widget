@@ -1,12 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 앱 아이콘 전경 — 선형 버스 + 은은한 입체감 (원래 크기의 90%). 스플래시 로고로도 쓰인다 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-    <group android:scaleX="2.2" android:scaleY="2.2"
-        android:translateX="27" android:translateY="27">
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M4,16c0,0.88 0.39,1.67 1,2.22V20c0,0.55 0.45,1 1,1h1c0.55,0 1,-0.45 1,-1v-1h8v1c0,0.55 0.45,1 1,1h1c0.55,0 1,-0.45 1,-1v-1.78c0.61,-0.55 1,-1.34 1,-2.22V6c0,-3.5 -3.58,-4 -8,-4S4,2.5 4,6v10zM7.5,17C6.67,17 6,16.33 6,15.5S6.67,14 7.5,14 9,14.67 9,15.5 8.33,17 7.5,17zM16.5,17c-0.83,0 -1.5,-0.67 -1.5,-1.5S15.67,14 16.5,14s1.5,0.67 1.5,1.5 -0.67,1.5 -1.5,1.5zM18,11H6V6h12v5z" />
-    </group>
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+<group android:scaleX="0.9000" android:scaleY="0.9000" android:translateX="5.400" android:translateY="5.625">
+<group android:scaleX="1.0000" android:scaleY="1.0000" android:translateX="0.000" android:translateY="2.667">
+<path android:pathData="M40,29.5 h28 a6,6 0 0 1 6,6 v32.0 a6,6 0 0 1 -6,6 h-28 a6,6 0 0 1 -6,-6 v-32.0 a6,6 0 0 1 6,-6z M34,36.5 h40 M34,55.5 h40" android:strokeWidth="2.74" android:strokeLineJoin="round" android:strokeColor="#14003B40" />
+<path android:pathData="M32.62777777777778,35.5 h-3 a2.5,2.5 0 0 0 -2.5,2.5 v6.5 M75.37222222222222,35.5 h3 a2.5,2.5 0 0 1 2.5,2.5 v6.5" android:strokeWidth="2.43" android:strokeLineCap="round" android:strokeLineJoin="round" android:strokeColor="#14003B40" />
+<path android:pathData="M38.7,64.5 a2.8,2.8 0 1 0 5.6,0 a2.8,2.8 0 1 0 -5.6,0zM63.7,64.5 a2.8,2.8 0 1 0 5.6,0 a2.8,2.8 0 1 0 -5.6,0z M38,74.37222222222222 v3.5 a1.5,1.5 0 0 0 1.5,1.5 h5 a1.5,1.5 0 0 0 1.5,-1.5 v-3.5z M62,74.37222222222222 v3.5 a1.5,1.5 0 0 0 1.5,1.5 h5 a1.5,1.5 0 0 0 1.5,-1.5 v-3.5z" android:fillColor="#14003B40" />
+</group>
+<group android:scaleX="1.0000" android:scaleY="1.0000" android:translateX="0.000" android:translateY="1.778">
+<path android:pathData="M40,29.5 h28 a6,6 0 0 1 6,6 v32.0 a6,6 0 0 1 -6,6 h-28 a6,6 0 0 1 -6,-6 v-32.0 a6,6 0 0 1 6,-6z M34,36.5 h40 M34,55.5 h40" android:strokeWidth="2.74" android:strokeLineJoin="round" android:strokeColor="#22003B40" />
+<path android:pathData="M32.62777777777778,35.5 h-3 a2.5,2.5 0 0 0 -2.5,2.5 v6.5 M75.37222222222222,35.5 h3 a2.5,2.5 0 0 1 2.5,2.5 v6.5" android:strokeWidth="2.43" android:strokeLineCap="round" android:strokeLineJoin="round" android:strokeColor="#22003B40" />
+<path android:pathData="M38.7,64.5 a2.8,2.8 0 1 0 5.6,0 a2.8,2.8 0 1 0 -5.6,0zM63.7,64.5 a2.8,2.8 0 1 0 5.6,0 a2.8,2.8 0 1 0 -5.6,0z M38,74.37222222222222 v3.5 a1.5,1.5 0 0 0 1.5,1.5 h5 a1.5,1.5 0 0 0 1.5,-1.5 v-3.5z M62,74.37222222222222 v3.5 a1.5,1.5 0 0 0 1.5,1.5 h5 a1.5,1.5 0 0 0 1.5,-1.5 v-3.5z" android:fillColor="#22003B40" />
+</group>
+<group android:scaleX="1.0000" android:scaleY="1.0000" android:translateX="0.000" android:translateY="1.000">
+<path android:pathData="M40,29.5 h28 a6,6 0 0 1 6,6 v32.0 a6,6 0 0 1 -6,6 h-28 a6,6 0 0 1 -6,-6 v-32.0 a6,6 0 0 1 6,-6z M34,36.5 h40 M34,55.5 h40" android:strokeWidth="2.74" android:strokeLineJoin="round" android:strokeColor="#33003B40" />
+<path android:pathData="M32.62777777777778,35.5 h-3 a2.5,2.5 0 0 0 -2.5,2.5 v6.5 M75.37222222222222,35.5 h3 a2.5,2.5 0 0 1 2.5,2.5 v6.5" android:strokeWidth="2.43" android:strokeLineCap="round" android:strokeLineJoin="round" android:strokeColor="#33003B40" />
+<path android:pathData="M38.7,64.5 a2.8,2.8 0 1 0 5.6,0 a2.8,2.8 0 1 0 -5.6,0zM63.7,64.5 a2.8,2.8 0 1 0 5.6,0 a2.8,2.8 0 1 0 -5.6,0z M38,74.37222222222222 v3.5 a1.5,1.5 0 0 0 1.5,1.5 h5 a1.5,1.5 0 0 0 1.5,-1.5 v-3.5z M62,74.37222222222222 v3.5 a1.5,1.5 0 0 0 1.5,1.5 h5 a1.5,1.5 0 0 0 1.5,-1.5 v-3.5z" android:fillColor="#33003B40" />
+</group>
+<group android:scaleX="1.0000" android:scaleY="1.0000" android:translateX="0.000" android:translateY="0.000">
+<path android:pathData="M40,29.5 h28 a6,6 0 0 1 6,6 v32.0 a6,6 0 0 1 -6,6 h-28 a6,6 0 0 1 -6,-6 v-32.0 a6,6 0 0 1 6,-6z M34,36.5 h40 M34,55.5 h40" android:strokeWidth="2.74" android:strokeLineJoin="round"><aapt:attr name="android:strokeColor"><gradient android:type="linear" android:startX="54" android:startY="26" android:endX="54" android:endY="80"><item android:offset="0" android:color="#FFFFFFFF"/><item android:offset="0.6" android:color="#FFF6FCFC"/><item android:offset="1" android:color="#FFD6EEEF"/></gradient></aapt:attr></path>
+<path android:pathData="M32.62777777777778,35.5 h-3 a2.5,2.5 0 0 0 -2.5,2.5 v6.5 M75.37222222222222,35.5 h3 a2.5,2.5 0 0 1 2.5,2.5 v6.5" android:strokeWidth="2.43" android:strokeLineCap="round" android:strokeLineJoin="round"><aapt:attr name="android:strokeColor"><gradient android:type="linear" android:startX="54" android:startY="26" android:endX="54" android:endY="80"><item android:offset="0" android:color="#FFFFFFFF"/><item android:offset="0.6" android:color="#FFF6FCFC"/><item android:offset="1" android:color="#FFD6EEEF"/></gradient></aapt:attr></path>
+<path android:pathData="M38.7,64.5 a2.8,2.8 0 1 0 5.6,0 a2.8,2.8 0 1 0 -5.6,0zM63.7,64.5 a2.8,2.8 0 1 0 5.6,0 a2.8,2.8 0 1 0 -5.6,0z M38,74.37222222222222 v3.5 a1.5,1.5 0 0 0 1.5,1.5 h5 a1.5,1.5 0 0 0 1.5,-1.5 v-3.5z M62,74.37222222222222 v3.5 a1.5,1.5 0 0 0 1.5,1.5 h5 a1.5,1.5 0 0 0 1.5,-1.5 v-3.5z"><aapt:attr name="android:fillColor"><gradient android:type="linear" android:startX="54" android:startY="26" android:endX="54" android:endY="80"><item android:offset="0" android:color="#FFFFFFFF"/><item android:offset="0.6" android:color="#FFF6FCFC"/><item android:offset="1" android:color="#FFD6EEEF"/></gradient></aapt:attr></path>
+</group>
+</group>
 </vector>

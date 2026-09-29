@@ -89,6 +89,7 @@ class AlarmService : Service() {
             return START_NOT_STICKY
         }
         if (running != alarm) begin(alarm)
+        WearSync.checkWatchApp(this)
         return START_NOT_STICKY
     }
 
@@ -361,6 +362,30 @@ class AlarmService : Service() {
         AlarmStore.setRemaining(remaining)
         val nm = getSystemService(NotificationManager::class.java) ?: return
         runCatching { nm.notify(STATUS_ID, statusNotification(alarm, remaining)) }
+        // 갤럭시 워치(Wear OS 앱)에도 같은 상태를 보낸다
+        val total = alarm.stops.lastIndex * PROGRESS_PER_STOP
+        WearSync.push(
+            this,
+            WearSync.State(
+                type = alarm.type.name,
+                routeNo = alarm.routeNo,
+                color = routeColor(alarm),
+                title = AlarmText.title(alarm, remaining),
+                subtitle = AlarmText.subtitle(alarm, remaining),
+                time = AlarmText.timeLine(alarm, remaining).orEmpty(),
+                chip = AlarmText.chip(alarm, remaining).orEmpty(),
+                status = when {
+                    remaining == null -> ""
+                    alarm.type == BusAlarm.Type.BOARD ->
+                        if (remaining <= 0) "도착" else if (remaining == 1) "곧 도착" else "${remaining}정류장 전"
+                    else -> if (remaining <= 0) "하차" else "${remaining}정류장 남음"
+                },
+                progress = if (alarm.type == BusAlarm.Type.ALIGHT && total > 0 && remaining != null)
+                    (maxOf(progressPos, (alarm.stops.lastIndex - remaining) * PROGRESS_PER_STOP).toFloat() / total)
+                        .coerceIn(0f, 1f)
+                else -1f
+            )
+        )
     }
 
     private fun statusNotification(alarm: BusAlarm, remaining: Int?): Notification {
@@ -485,8 +510,11 @@ class AlarmService : Service() {
             .setCategory(Notification.CATEGORY_ALARM)
             .setAutoCancel(true)
             .setContentIntent(openAppIntent())
+            // 워치 앱이 깔려 있으면 이 알림은 워치로 넘기지 않는다 — 워치 앱이 직접 띄우고 길게 진동한다
+            .setLocalOnly(WearSync.watchAppReachable(this))
             .build()
         runCatching { nm.notify(ALERT_ID + alarm.routeNo.hashCode() % 1000, n) }
+        WearSync.alert(this, title, text, routeColor(alarm))
         voice?.let { playVoice(it) }
     }
 
@@ -573,6 +601,7 @@ class AlarmService : Service() {
         stopWatching()
         running = null
         AlarmStore.set(this, null)
+        WearSync.push(this, null)
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         stopSelf()
     }

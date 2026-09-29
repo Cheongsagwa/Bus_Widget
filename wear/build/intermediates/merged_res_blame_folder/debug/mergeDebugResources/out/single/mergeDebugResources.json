@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "C:\\Users\\cheon\\.gradle\\daemon\\9.6.0\\com.cheon.ccbuswidget.wear-debug-56:\\drawable_ic_launcher_wear.xml.flat",
+        "source": "C:\\Users\\cheon\\.gradle\\daemon\\9.6.0\\com.cheon.ccbuswidget.wear-main-58:\\drawable\\ic_launcher_wear.xml"
+    },
+    {
+        "merged": "C:\\Users\\cheon\\.gradle\\daemon\\9.6.0\\com.cheon.ccbuswidget.wear-debug-56:\\drawable_ic_bus.xml.flat",
+        "source": "C:\\Users\\cheon\\.gradle\\daemon\\9.6.0\\com.cheon.ccbuswidget.wear-main-58:\\drawable\\ic_bus.xml"
+    },
+    {
+        "merged": "com.cheon.ccbuswidget.wear-debug-56:/drawable_ic_bus.xml.flat",
+        "source": "com.cheon.ccbuswidget.wear-main-58:/drawable/ic_bus.xml"
+    },
+    {
+        "merged": "com.cheon.ccbuswidget.wear-debug-56:/drawable_ic_launcher_wear.xml.flat",
+        "source": "com.cheon.ccbuswidget.wear-main-58:/drawable/ic_launcher_wear.xml"
+    }
+]

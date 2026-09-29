@@ -1,0 +1,313 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.cheon.ccbuswidget"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+7-->INJECTED
+8        android:minSdkVersion="30"
+8-->INJECTED
+9        android:targetSdkVersion="36" />
+9-->INJECTED
+10
+11    <uses-feature android:name="android.hardware.type.watch" />
+11-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:4:5-64
+11-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:4:19-61
+12
+13    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+13-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:5:5-77
+13-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:5:22-74
+14    <uses-permission android:name="android.permission.VIBRATE" />
+14-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:6:5-66
+14-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:6:22-63
+15
+16    <queries>
+16-->[androidx.wear.tiles:tiles:1.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\a11b9e2d10c46be2b8954a9df961e50a\transformed\tiles-1.5.0\AndroidManifest.xml:7:5-11:15
+17        <intent>
+17-->[androidx.wear.tiles:tiles:1.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\a11b9e2d10c46be2b8954a9df961e50a\transformed\tiles-1.5.0\AndroidManifest.xml:8:9-10:18
+18            <action android:name="androidx.wear.tiles.action.BIND_UPDATE_REQUESTER" />
+18-->[androidx.wear.tiles:tiles:1.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\a11b9e2d10c46be2b8954a9df961e50a\transformed\tiles-1.5.0\AndroidManifest.xml:9:13-87
+18-->[androidx.wear.tiles:tiles:1.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\a11b9e2d10c46be2b8954a9df961e50a\transformed\tiles-1.5.0\AndroidManifest.xml:9:21-84
+19        </intent>
+20    </queries>
+21
+22    <permission
+22-->[androidx.core:core:1.19.1] C:\Users\cheon\.gradle\caches\9.6.0\transforms\1b1d3027a5cf4e14a577d8faf46f53b2\transformed\core-1.19.1\AndroidManifest.xml:22:5-24:47
+23        android:name="com.cheon.ccbuswidget.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+23-->[androidx.core:core:1.19.1] C:\Users\cheon\.gradle\caches\9.6.0\transforms\1b1d3027a5cf4e14a577d8faf46f53b2\transformed\core-1.19.1\AndroidManifest.xml:23:9-81
+24        android:protectionLevel="signature" />
+24-->[androidx.core:core:1.19.1] C:\Users\cheon\.gradle\caches\9.6.0\transforms\1b1d3027a5cf4e14a577d8faf46f53b2\transformed\core-1.19.1\AndroidManifest.xml:24:9-44
+25
+26    <uses-permission android:name="com.cheon.ccbuswidget.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+26-->[androidx.core:core:1.19.1] C:\Users\cheon\.gradle\caches\9.6.0\transforms\1b1d3027a5cf4e14a577d8faf46f53b2\transformed\core-1.19.1\AndroidManifest.xml:26:5-97
+26-->[androidx.core:core:1.19.1] C:\Users\cheon\.gradle\caches\9.6.0\transforms\1b1d3027a5cf4e14a577d8faf46f53b2\transformed\core-1.19.1\AndroidManifest.xml:26:22-94
+27
+28    <application
+28-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:8:5-91:19
+29        android:allowBackup="true"
+29-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:9:9-35
+30        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+30-->[androidx.core:core:1.19.1] C:\Users\cheon\.gradle\caches\9.6.0\transforms\1b1d3027a5cf4e14a577d8faf46f53b2\transformed\core-1.19.1\AndroidManifest.xml:28:18-86
+31        android:debuggable="true"
+32        android:extractNativeLibs="false"
+32-->INJECTED
+33        android:icon="@drawable/ic_launcher_wear"
+33-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:10:9-50
+34        android:label="@string/app_name"
+34-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:11:9-41
+35        android:supportsRtl="true"
+35-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:12:9-35
+36        android:testOnly="true"
+37        android:theme="@android:style/Theme.DeviceDefault" >
+37-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:13:9-59
+38
+39        <!-- 폰 앱이 있어야 동작한다 (알람 계산은 폰이 한다) -->
+40        <meta-data
+40-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:16:9-18:37
+41            android:name="com.google.android.wearable.standalone"
+41-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:17:13-66
+42            android:value="false" />
+42-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:18:13-34
+43
+44        <!--
+45          이 워치 앱이 깔려 있으면 폰 앱 알림을 워치로 넘기지 않는다 (알림이 두 번 뜨지 않도록).
+46          승하차 알림은 워치 앱이 직접 띄우고 길게 진동한다.
+47        -->
+48        <meta-data
+48-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:24:9-26:43
+49            android:name="com.google.android.wearable.notificationBridgeMode"
+49-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:25:13-78
+50            android:value="NO_BRIDGING" />
+50-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:26:13-40
+51
+52        <activity
+52-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:28:9-36:20
+53            android:name="com.cheon.ccbuswidget.wear.AlarmActivity"
+53-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:29:13-42
+54            android:exported="true"
+54-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:30:13-36
+55            android:taskAffinity="" >
+55-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:31:13-36
+56            <intent-filter>
+56-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:32:13-35:29
+57                <action android:name="android.intent.action.MAIN" />
+57-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:33:17-69
+57-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:33:25-66
+58
+59                <category android:name="android.intent.category.LAUNCHER" />
+59-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:34:17-77
+59-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:34:27-74
+60            </intent-filter>
+61        </activity>
+62
+63        <!-- 폰에서 보낸 알람 상태를 받는다 -->
+64        <service
+64-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:39:9-57:19
+65            android:name="com.cheon.ccbuswidget.wear.AlarmDataListener"
+65-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:40:13-46
+66            android:exported="true" >
+66-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:41:13-36
+67            <intent-filter>
+67-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:42:13-48:29
+68                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+68-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:43:17-87
+68-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:43:25-84
+69
+70                <data
+70-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:44:17-47:45
+71                    android:host="*"
+71-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:45:21-37
+72                    android:path="/bus_alarm"
+72-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:46:21-46
+73                    android:scheme="wear" />
+73-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:47:21-42
+74            </intent-filter>
+75            <!-- 폰에서 온 승하차 알림 (워치가 직접 길게 진동) -->
+76            <intent-filter>
+76-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:50:13-56:29
+77                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+77-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:51:17-91
+77-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:51:25-88
+78
+79                <data
+79-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:44:17-47:45
+80                    android:host="*"
+80-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:45:21-37
+81                    android:path="/bus_alarm/alert"
+81-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:46:21-46
+82                    android:scheme="wear" />
+82-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:47:21-42
+83            </intent-filter>
+84        </service>
+85
+86        <!-- 타일 -->
+87        <service
+87-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:60:9-71:19
+88            android:name="com.cheon.ccbuswidget.wear.AlarmTileService"
+88-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:61:13-45
+89            android:exported="true"
+89-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:62:13-36
+90            android:label="@string/tile_label"
+90-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:63:13-47
+91            android:permission="com.google.android.wearable.permission.BIND_TILE_PROVIDER" >
+91-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:64:13-91
+92            <intent-filter>
+92-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:65:13-67:29
+93                <action android:name="androidx.wear.tiles.action.BIND_TILE_PROVIDER" />
+93-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:66:17-88
+93-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:66:25-85
+94            </intent-filter>
+95
+96            <meta-data
+96-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:68:13-70:65
+97                android:name="androidx.wear.tiles.PREVIEW"
+97-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:69:17-59
+98                android:resource="@drawable/ic_launcher_wear" />
+98-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:70:17-62
+99        </service>
+100
+101        <!-- 워치 페이스 컴플리케이션 (남은 정류장 수) -->
+102        <service
+102-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:74:9-90:19
+103            android:name="com.cheon.ccbuswidget.wear.RemainingComplicationService"
+103-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:75:13-57
+104            android:exported="true"
+104-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:76:13-36
+105            android:icon="@drawable/ic_bus"
+105-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:77:13-44
+106            android:label="@string/complication_label"
+106-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:78:13-55
+107            android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER" >
+107-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:79:13-99
+108            <intent-filter>
+108-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:80:13-82:29
+109                <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST" />
+109-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:81:17-116
+109-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:81:25-113
+110            </intent-filter>
+111
+112            <meta-data
+112-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:83:13-85:46
+113                android:name="android.support.wearable.complications.SUPPORTED_TYPES"
+113-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:84:17-86
+114                android:value="SHORT_TEXT" />
+114-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:85:17-43
+115            <!-- 0 = 정해진 주기로 부르지 않고, 폰에서 상태가 올 때마다 직접 갱신을 요청한다 -->
+116            <meta-data
+116-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:87:13-89:37
+117                android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
+117-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:88:17-92
+118                android:value="0" />
+118-->C:\Users\cheon\Desktop\Programming\Bus_Widget\wear\src\main\AndroidManifest.xml:89:17-34
+119        </service>
+120
+121        <activity
+121-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\3433ca6aa898b93236cae806296b6e1e\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:9-173
+122            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+122-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\3433ca6aa898b93236cae806296b6e1e\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:19-85
+123            android:exported="false"
+123-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\3433ca6aa898b93236cae806296b6e1e\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:146-170
+124            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+124-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\3433ca6aa898b93236cae806296b6e1e\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:86-145
+125
+126        <uses-library
+126-->[androidx.wear.compose:compose-foundation:1.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\eafb8295fc621c1b70d3276caad5078d\transformed\compose-foundation-1.5.0\AndroidManifest.xml:23:9-25:40
+127            android:name="wear-sdk"
+127-->[androidx.wear.compose:compose-foundation:1.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\eafb8295fc621c1b70d3276caad5078d\transformed\compose-foundation-1.5.0\AndroidManifest.xml:24:13-36
+128            android:required="false" />
+128-->[androidx.wear.compose:compose-foundation:1.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\eafb8295fc621c1b70d3276caad5078d\transformed\compose-foundation-1.5.0\AndroidManifest.xml:25:13-37
+129        <uses-library
+129-->[androidx.wear.watchface:watchface-complications-data:1.2.1] C:\Users\cheon\.gradle\caches\9.6.0\transforms\e98e6e8398505d04996ca79b882c94d2\transformed\watchface-complications-data-1.2.1\AndroidManifest.xml:8:9-10:40
+130            android:name="com.google.android.wearable"
+130-->[androidx.wear.watchface:watchface-complications-data:1.2.1] C:\Users\cheon\.gradle\caches\9.6.0\transforms\e98e6e8398505d04996ca79b882c94d2\transformed\watchface-complications-data-1.2.1\AndroidManifest.xml:9:13-55
+131            android:required="false" />
+131-->[androidx.wear.watchface:watchface-complications-data:1.2.1] C:\Users\cheon\.gradle\caches\9.6.0\transforms\e98e6e8398505d04996ca79b882c94d2\transformed\watchface-complications-data-1.2.1\AndroidManifest.xml:10:13-37
+132        <uses-library
+132-->[androidx.window:window:1.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\5d74820a5ae68d17c62deccf8696f84f\transformed\window-1.5.0\AndroidManifest.xml:23:9-25:40
+133            android:name="androidx.window.extensions"
+133-->[androidx.window:window:1.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\5d74820a5ae68d17c62deccf8696f84f\transformed\window-1.5.0\AndroidManifest.xml:24:13-54
+134            android:required="false" />
+134-->[androidx.window:window:1.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\5d74820a5ae68d17c62deccf8696f84f\transformed\window-1.5.0\AndroidManifest.xml:25:13-37
+135        <uses-library
+135-->[androidx.window:window:1.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\5d74820a5ae68d17c62deccf8696f84f\transformed\window-1.5.0\AndroidManifest.xml:26:9-28:40
+136            android:name="androidx.window.sidecar"
+136-->[androidx.window:window:1.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\5d74820a5ae68d17c62deccf8696f84f\transformed\window-1.5.0\AndroidManifest.xml:27:13-51
+137            android:required="false" />
+137-->[androidx.window:window:1.5.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\5d74820a5ae68d17c62deccf8696f84f\transformed\window-1.5.0\AndroidManifest.xml:28:13-37
+138
+139        <provider
+139-->[androidx.emoji2:emoji2:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\ab5373b26998ea0eed76ce28e062f952\transformed\emoji2-1.4.0\AndroidManifest.xml:24:9-32:20
+140            android:name="androidx.startup.InitializationProvider"
+140-->[androidx.emoji2:emoji2:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\ab5373b26998ea0eed76ce28e062f952\transformed\emoji2-1.4.0\AndroidManifest.xml:25:13-67
+141            android:authorities="com.cheon.ccbuswidget.androidx-startup"
+141-->[androidx.emoji2:emoji2:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\ab5373b26998ea0eed76ce28e062f952\transformed\emoji2-1.4.0\AndroidManifest.xml:26:13-68
+142            android:exported="false" >
+142-->[androidx.emoji2:emoji2:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\ab5373b26998ea0eed76ce28e062f952\transformed\emoji2-1.4.0\AndroidManifest.xml:27:13-37
+143            <meta-data
+143-->[androidx.emoji2:emoji2:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\ab5373b26998ea0eed76ce28e062f952\transformed\emoji2-1.4.0\AndroidManifest.xml:29:13-31:52
+144                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+144-->[androidx.emoji2:emoji2:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\ab5373b26998ea0eed76ce28e062f952\transformed\emoji2-1.4.0\AndroidManifest.xml:30:17-75
+145                android:value="androidx.startup" />
+145-->[androidx.emoji2:emoji2:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\ab5373b26998ea0eed76ce28e062f952\transformed\emoji2-1.4.0\AndroidManifest.xml:31:17-49
+146            <meta-data
+146-->[androidx.lifecycle:lifecycle-process:2.10.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\c322b5b48ec5dc2441fee295450dbe06\transformed\lifecycle-process-2.10.0\AndroidManifest.xml:29:13-31:52
+147                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+147-->[androidx.lifecycle:lifecycle-process:2.10.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\c322b5b48ec5dc2441fee295450dbe06\transformed\lifecycle-process-2.10.0\AndroidManifest.xml:30:17-78
+148                android:value="androidx.startup" />
+148-->[androidx.lifecycle:lifecycle-process:2.10.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\c322b5b48ec5dc2441fee295450dbe06\transformed\lifecycle-process-2.10.0\AndroidManifest.xml:31:17-49
+149            <meta-data
+149-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:29:13-31:52
+150                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+150-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:30:17-85
+151                android:value="androidx.startup" />
+151-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:31:17-49
+152        </provider>
+153
+154        <meta-data
+154-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\3e59eeda9d3294e4658e6168915d5432\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:9-122
+155            android:name="com.google.android.gms.version"
+155-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\3e59eeda9d3294e4658e6168915d5432\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:20-65
+156            android:value="@integer/google_play_services_version" />
+156-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\3e59eeda9d3294e4658e6168915d5432\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:66-119
+157
+158        <receiver
+158-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:34:9-52:20
+159            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+159-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:35:13-76
+160            android:directBootAware="false"
+160-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:36:13-44
+161            android:enabled="true"
+161-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:37:13-35
+162            android:exported="true"
+162-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:38:13-36
+163            android:permission="android.permission.DUMP" >
+163-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:39:13-57
+164            <intent-filter>
+164-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:40:13-42:29
+165                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+165-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:17-91
+165-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:25-88
+166            </intent-filter>
+167            <intent-filter>
+167-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:43:13-45:29
+168                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+168-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:17-85
+168-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:25-82
+169            </intent-filter>
+170            <intent-filter>
+170-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:46:13-48:29
+171                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+171-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:17-88
+171-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:25-85
+172            </intent-filter>
+173            <intent-filter>
+173-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:49:13-51:29
+174                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+174-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:17-95
+174-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\cheon\.gradle\caches\9.6.0\transforms\b3b59ce186488a16cf1b82202af0d4cd\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:25-92
+175            </intent-filter>
+176        </receiver>
+177    </application>
+178
+179</manifest>

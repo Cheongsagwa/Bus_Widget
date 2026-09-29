@@ -27,3 +27,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "ChuncheonBusWidget"
 include(":app")
+// 갤럭시 워치(Wear OS) 앱 — 승하차 알람을 워치에서 본다
+include(":wear")

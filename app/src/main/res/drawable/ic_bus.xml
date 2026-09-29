@@ -1,10 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 버스 아이콘 (선형 · 사이드미러 · 원형 전조등). 색은 tint 로 바꾼다 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24"
-    android:tint="#FFFFFF">
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M4,16c0,0.88 0.39,1.67 1,2.22V20c0,0.55 0.45,1 1,1h1c0.55,0 1,-0.45 1,-1v-1h8v1c0,0.55 0.45,1 1,1h1c0.55,0 1,-0.45 1,-1v-1.78c0.61,-0.55 1,-1.34 1,-2.22V6c0,-3.5 -3.58,-4 -8,-4S4,2.5 4,6v10zM7.5,17C6.67,17 6,16.33 6,15.5S6.67,14 7.5,14 9,14.67 9,15.5 8.33,17 7.5,17zM16.5,17c-0.83,0 -1.5,-0.67 -1.5,-1.5S15.67,14 16.5,14s1.5,0.67 1.5,1.5 -0.67,1.5 -1.5,1.5zM18,11H6V6h12v5z" />
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24" android:tint="#FFFFFF">
+<group android:scaleX="0.3918" android:scaleY="0.3918" android:translateX="-9.157" android:translateY="-9.059">
+<path android:pathData="M40,29.5 h28 a6,6 0 0 1 6,6 v32.0 a6,6 0 0 1 -6,6 h-28 a6,6 0 0 1 -6,-6 v-32.0 a6,6 0 0 1 6,-6z M34,36.5 h40 M34,55.5 h40" android:strokeWidth="3.8" android:strokeLineJoin="round" android:strokeColor="#FFFFFFFF" />
+<path android:pathData="M32.1,35.5 h-3 a2.5,2.5 0 0 0 -2.5,2.5 v6.5 M75.9,35.5 h3 a2.5,2.5 0 0 1 2.5,2.5 v6.5" android:strokeWidth="3.344" android:strokeLineCap="round" android:strokeLineJoin="round" android:strokeColor="#FFFFFFFF" />
+<path android:pathData="M38.5,64.5 a3.0,3.0 0 1 0 6.0,0 a3.0,3.0 0 1 0 -6.0,0zM63.5,64.5 a3.0,3.0 0 1 0 6.0,0 a3.0,3.0 0 1 0 -6.0,0z M38,74.9 v3.5 a1.5,1.5 0 0 0 1.5,1.5 h5 a1.5,1.5 0 0 0 1.5,-1.5 v-3.5z M62,74.9 v3.5 a1.5,1.5 0 0 0 1.5,1.5 h5 a1.5,1.5 0 0 0 1.5,-1.5 v-3.5z" android:fillColor="#FFFFFFFF" />
+</group>
 </vector>

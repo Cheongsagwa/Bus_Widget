@@ -1,11 +1,13 @@
-<!-- 지도 위 버스 정류장 — Figma '버스 정류장' 컴포넌트 -->
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 지도 위 버스 정류장 · 버스 — 노선 색 원 + 흰 버스 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"
     android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="#FFFFFF"
-        android:pathData="M24,12a12,12 0 1,1 -24,0a12,12 0 1,1 24,0z" />
-    <path android:fillColor="@color/route_badge"
-        android:pathData="M23,12a11,11 0 1,1 -22,0a11,11 0 1,1 22,0z" />
-    <path android:fillColor="#FFFFFF"
-        android:pathData="M7,14.9352C7,15.434 7.23625,15.8818 7.60577,16.1935V17.2024C7.60577,17.5142 7.87837,17.7692 8.21154,17.7692H8.81731C9.15048,17.7692 9.42308,17.5142 9.42308,17.2024V16.6356H14.2692V17.2024C14.2692,17.5142 14.5418,17.7692 14.875,17.7692H15.4808C15.8139,17.7692 16.0865,17.5142 16.0865,17.2024V16.1935C16.4561,15.8818 16.6923,15.434 16.6923,14.9352V9.26721C16.6923,7.2834 14.5237,7 11.8462,7C9.16865,7 7,7.2834 7,9.26721V14.9352ZM9.12019,15.502C8.6174,15.502 8.21154,15.1223 8.21154,14.6518C8.21154,14.1814 8.6174,13.8016 9.12019,13.8016C9.62298,13.8016 10.0288,14.1814 10.0288,14.6518C10.0288,15.1223 9.62298,15.502 9.12019,15.502ZM14.5721,15.502C14.0693,15.502 13.6635,15.1223 13.6635,14.6518C13.6635,14.1814 14.0693,13.8016 14.5721,13.8016C15.0749,13.8016 15.4808,14.1814 15.4808,14.6518C15.4808,15.1223 15.0749,15.502 14.5721,15.502ZM15.4808,12.1012H8.21154V9.26721H15.4808V12.1012Z" />
+<path android:fillColor="#FFFFFF" android:pathData="M24,12a12,12 0 1,1 -24,0a12,12 0 1,1 24,0z" />
+<path android:fillColor="@color/route_badge" android:pathData="M23,12a11,11 0 1,1 -22,0a11,11 0 1,1 22,0z" />
+<group android:scaleX="0.2332" android:scaleY="0.2332" android:translateX="-0.593" android:translateY="-0.535">
+<path android:pathData="M40,29.5 h28 a6,6 0 0 1 6,6 v32.0 a6,6 0 0 1 -6,6 h-28 a6,6 0 0 1 -6,-6 v-32.0 a6,6 0 0 1 6,-6z M34,36.5 h40 M34,55.5 h40" android:strokeWidth="3.8" android:strokeLineJoin="round" android:strokeColor="#FFFFFFFF" />
+<path android:pathData="M32.1,35.5 h-3 a2.5,2.5 0 0 0 -2.5,2.5 v6.5 M75.9,35.5 h3 a2.5,2.5 0 0 1 2.5,2.5 v6.5" android:strokeWidth="3.344" android:strokeLineCap="round" android:strokeLineJoin="round" android:strokeColor="#FFFFFFFF" />
+<path android:pathData="M38.5,64.5 a3.0,3.0 0 1 0 6.0,0 a3.0,3.0 0 1 0 -6.0,0zM63.5,64.5 a3.0,3.0 0 1 0 6.0,0 a3.0,3.0 0 1 0 -6.0,0z M38,74.9 v3.5 a1.5,1.5 0 0 0 1.5,1.5 h5 a1.5,1.5 0 0 0 1.5,-1.5 v-3.5z M62,74.9 v3.5 a1.5,1.5 0 0 0 1.5,1.5 h5 a1.5,1.5 0 0 0 1.5,-1.5 v-3.5z" android:fillColor="#FFFFFFFF" />
+</group>
 </vector>

@@ -69,6 +69,19 @@
             android:exported="false"
             android:foregroundServiceType="location|dataSync" />
 
+        <!-- 갤럭시 워치에서 [해제] 를 누르면 오는 메시지 -->
+        <service
+            android:name=".alarm.WearMessageListener"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data
+                    android:host="*"
+                    android:path="/bus_alarm/cancel"
+                    android:scheme="wear" />
+            </intent-filter>
+        </service>
+
         <receiver
             android:name=".widget.BusWidgetProvider"
             android:exported="true">
